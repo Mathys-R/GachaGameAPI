@@ -1,0 +1,7 @@
+/home/bastien/Documents/WEB_API/GachaGameAPI/src/main/java/com/example/GachaGameAPI/GachaGameApiApplication.java
+/home/bastien/Documents/WEB_API/GachaGameAPI/src/main/java/com/example/GachaGameAPI/auth/authentification.java
+/home/bastien/Documents/WEB_API/GachaGameAPI/src/main/java/com/example/GachaGameAPI/monstre/Competence.java
+/home/bastien/Documents/WEB_API/GachaGameAPI/src/main/java/com/example/GachaGameAPI/monstre/Monstre.java
+/home/bastien/Documents/WEB_API/GachaGameAPI/src/main/java/com/example/GachaGameAPI/monstre/MonstreController.java
+/home/bastien/Documents/WEB_API/GachaGameAPI/src/main/java/com/example/GachaGameAPI/monstre/MonstreRepository.java
+/home/bastien/Documents/WEB_API/GachaGameAPI/src/main/java/com/example/GachaGameAPI/monstre/MonstreService.java

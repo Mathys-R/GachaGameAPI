@@ -1,0 +1,20 @@
+[
+    {
+      "typeElementaire": "feu",
+      "hp": 500,
+      "atk": 70,
+      "def": 40,
+      "vit": 20,
+      "competences": [
+        {
+          "nom": "Boule de feu",
+          "degatsDeBase": 50,
+          "ratioDegats": 1.2,
+          "cooldown": 2,
+          "niveauAmelioration": 0,
+          "niveauAmeliorationMax": 5
+        }
+      ]
+    }
+  ]
+  
