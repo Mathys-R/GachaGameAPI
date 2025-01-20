@@ -7,7 +7,7 @@ spring:
       username: ${MONGO_USERNAME:mongoadmin}
       password: ${MONGO_PASSWORD:password}
       authentication-database: admin
-      database: ${MONGO_DB:productdb}
+      database: ${MONGO_DB:authdb}
 
 # Optionally, define other properties depending on the module (auth, player, monsters, summon)
 # You could override these with specific profiles or environment variables

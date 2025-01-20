@@ -1,4 +1,4 @@
-package com.example.GachaGameAPI.monstre;
+package com.imt.GachaGameAPI.monsters;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,14 +12,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
-public class MonstreControllerTest {
+public class MonstersControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
 
     @Test
-    public void testGetAllMonstres() throws Exception {
-        mockMvc.perform(get("/monstres")
+    public void testGetAllMonsters() throws Exception {
+        mockMvc.perform(get("/monsters")
                 .contentType(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk());
     }

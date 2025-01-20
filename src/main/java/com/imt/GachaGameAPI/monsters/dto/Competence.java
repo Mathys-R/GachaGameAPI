@@ -1,4 +1,4 @@
-package com.example.GachaGameAPI.monstre;
+package com.imt.GachaGameAPI.monsters.dto;
 
 public class Competence {
 
