@@ -1,10 +1,10 @@
-package com.example.GachaGameAPI.auth;
+package com.imt.GachaGameAPI.auth.model;
 
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
 @Document
-public class authentification {
+public class Auth {
 
     @MongoId
     private static int lastId = 0;
@@ -12,7 +12,7 @@ public class authentification {
     private String username;
     private String password;
 
-    public authentification(String username, String password) {
+    public Auth(String username, String password) {
         this.id = ++lastId;
         this.username = username;
         this.password = password;

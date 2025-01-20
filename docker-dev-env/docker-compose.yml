@@ -1,11 +1,177 @@
-version: '3.3'
+version: '3.8'
+
 services:
-  mongo:
-    ports:
-      - '27017:27017'
-    container_name: demo-mongo
-    restart: on-failure
+  # MongoDB service for API Authentication
+  mongo-auth:
+    image: mongo
+    container_name: mongo-auth
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mongoadmin
       - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-auth:/data/db
+    ports:
+      - '27017:27017'
+    expose:
+      - 27017
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # API Authentication service
+  api-auth:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    container_name: api-auth
+    ports:
+      - "8081:8081"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8081
+      - MODULE_PATH=auth
+      - MONGO_HOST=mongo-auth
+      - MONGO_PORT=27017
+      - MONGO_USERNAME=mongoadmin
+      - MONGO_PASSWORD=password
+      - MONGO_DB=authdb
+    depends_on:
+      mongo-auth:
+        condition: service_healthy
+
+  # MongoDB service for API Player
+  mongo-player:
     image: mongo
+    container_name: mongo-player
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-player:/data/db
+    ports:
+      - '27018:27017'
+    expose:
+      - 27017
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # API Player service
+  api-player:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    container_name: api-player
+    ports:
+      - "8082:8082"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8082
+      - MODULE_PATH=player
+      - MONGO_HOST=mongo-player
+      - MONGO_PORT=27017
+      - MONGO_USERNAME=mongoadmin
+      - MONGO_PASSWORD=password
+      - MONGO_DB=playerdb
+    depends_on:
+      mongo-player:
+        condition: service_healthy
+
+  # MongoDB service for API Monsters
+  mongo-monsters:
+    image: mongo
+    container_name: mongo-monsters
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-monsters:/data/db
+    ports:
+      - '27019:27017'
+    expose:
+      - 27017
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # API Monsters service
+  api-monsters:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    container_name: api-monsters
+    ports:
+      - "8083:8083"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8083
+      - MODULE_PATH=monsters
+      - MONGO_HOST=mongo-monsters
+      - MONGO_PORT=27017
+      - MONGO_USERNAME=mongoadmin
+      - MONGO_PASSWORD=password
+      - MONGO_DB=monstersdb
+    depends_on:
+      mongo-monsters:
+        condition: service_healthy
+
+  # MongoDB service for API Summon
+  mongo-summon:
+    image: mongo
+    container_name: mongo-summon
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=mongoadmin
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    volumes:
+      - mongo-summon:/data/db
+    ports:
+      - '27020:27017'
+    expose:
+      - 27017
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
+  # API Summon service
+  api-summon:
+    build:
+      context: ../
+      dockerfile: Dockerfile
+    container_name: api-summon
+    ports:
+      - "8084:8084"
+    environment:
+      - SPRING_PROFILES_ACTIVE=docker
+      - SERVER_PORT=8084
+      - MODULE_PATH=summon
+      - MONGO_HOST=mongo-summon
+      - MONGO_PORT=27017
+      - MONGO_USERNAME=mongoadmin
+      - MONGO_PASSWORD=password
+      - MONGO_DB=summondb
+    depends_on:
+      mongo-summon:
+        condition: service_healthy
+
+volumes:
+  mongo-auth:
+  mongo-player:
+  mongo-monsters:
+  mongo-summon:
+

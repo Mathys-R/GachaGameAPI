@@ -1,4 +1,4 @@
-package com.example.GachaGameAPI;
+package com.imt.GachaGameAPI;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

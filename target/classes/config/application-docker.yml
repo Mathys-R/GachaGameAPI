@@ -1,0 +1,19 @@
+spring:
+  data:
+    mongodb:
+      # MongoDB connection details for each service (auth, player, monsters, summon)
+      host: ${MONGO_HOST:localhost}
+      port: ${MONGO_PORT:27017}
+      username: ${MONGO_USERNAME:mongoadmin}
+      password: ${MONGO_PASSWORD:password}
+      authentication-database: admin
+      database: ${MONGO_DB:productdb}
+
+# Optionally, define other properties depending on the module (auth, player, monsters, summon)
+# You could override these with specific profiles or environment variables
+
+api:
+  base-url: "http://localhost:8080"
+  
+profiles:
+  active: docker 
