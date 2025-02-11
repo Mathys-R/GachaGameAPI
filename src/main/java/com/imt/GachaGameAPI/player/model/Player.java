@@ -5,14 +5,10 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
-import com.imt.GachaGameAPI.monsters.model.Monsters;
-
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-
 
 @Setter
 @Getter
@@ -24,46 +20,36 @@ public class Player {
     @MongoId
     private int id;
     private int level;
-    private List<Monsters> inventory;
+    private int experience;
+    private List<String> inventory; // Stocke les IDs des monstres
 
-    // public Player(int id, int level, List<Monsters> inventory){
-    //     this.id = id;
-    //     this.level = level;
-    //     this.inventory = inventory;
-    // }
-    
-    // public int getId() {
-    //     return id;
-    // }
+    public int getXpThreshold() {
+        return (int) (50 * Math.pow(1.1, level - 1));
+    }
 
-    // public void setId(int id) {
-    //     this.id = id;
-    // }
+    public boolean addExperience(int xp) {
+        this.experience += xp;
+        if (this.experience >= getXpThreshold()) {
+            levelUp();
+            return true;
+        }
+        return false;
+    }
 
-    // public int getLevel() {
-    //     return level;
-    // }
+    private void levelUp() {
+        this.experience = 0;
+        this.level++;
+    }
 
-    // public void setLevel(int level) {
-    //     this.level = level;
-    // }
-    
-    // public void levelUp() {
-    //     if (this.level < 50) {
-    //         this.level = this.level+=1;
-    //     }
-    // }
-    
-    // public List<Monsters> getInventory() {
-    //     return inventory;
-    // }
+    public boolean addMonster(String monsterId) {
+        if (inventory.size() < 10 + level) { // Taille max = 10 + level
+            inventory.add(monsterId);
+            return true;
+        }
+        return false;
+    }
 
-    // public void setInventory(List<Monsters> inventory) {
-    //     this.inventory = inventory;
-    // }
-
-    // public void addMonster(Monsters monster){
-    //     this.inventory.add(monster);
-    // }
-
+    public boolean removeMonster(String monsterId) {
+        return inventory.remove(monsterId);
+    }
 }
