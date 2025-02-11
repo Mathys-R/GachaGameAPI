@@ -20,8 +20,9 @@ public class PlayerService {
         playerDao.save(player);
     }
 
-    
     public List<Player> findAllPlayers(){
         return playerDao.findAll();
     }
+
+    // Ajouter une méthode avec addMonster(userId, summonedMonster.getId());
 }
