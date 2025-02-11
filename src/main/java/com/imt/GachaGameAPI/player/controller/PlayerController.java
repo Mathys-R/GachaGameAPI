@@ -1,5 +1,6 @@
 package com.imt.GachaGameAPI.player.controller;
 
+import com.imt.GachaGameAPI.player.dto.PlayerDto;
 import com.imt.GachaGameAPI.player.model.Player;
 import com.imt.GachaGameAPI.player.service.PlayerService;
 
@@ -20,11 +21,27 @@ public class PlayerController {
     public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
     }
+    
 
     @PostMapping("/save")
     public ResponseEntity<String> createPlayer(@Valid @RequestBody Player player) {
         playerService.savePlayer(player);
         return ResponseEntity.ok("Player saved!");
+    }
+
+    @GetMapping("/")
+    public ResponseEntity<List<PlayerDto>> getAllPlayers() {
+        List<PlayerDto> players = playerService.findAllPlayers()
+            .stream()
+            .map(player -> new PlayerDto(
+                player.getId(),
+                player.getLevel(),
+                player.getExperience(),  
+                player.getInventory()
+            ))
+            .toList();
+
+        return ResponseEntity.ok(players);
     }
 
     @GetMapping("/{id}")
