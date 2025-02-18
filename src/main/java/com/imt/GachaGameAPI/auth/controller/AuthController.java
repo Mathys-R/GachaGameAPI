@@ -33,7 +33,7 @@ public class AuthController {
         Optional<UserDTO> userDTO = userService.getUserByUsername(username);
 
         return userDTO.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body((UserDTO) Map.of("message", "Utilisateur non trouvé")));
+                .orElseGet(() -> ResponseEntity.status(500).body((UserDTO) Map.of("message", "Utilisateur non trouvé")));
     }
 
     @PostMapping("/token")
@@ -47,7 +47,7 @@ public class AuthController {
     public ResponseEntity<Map<String, String>> deleteUser(@RequestBody Map<String, String> request) {
         String username = request.get("username");
         userService.deleteUser(username);
-        return ResponseEntity.ok(Map.of("message", username + "supprimé avec succès"));
+        return ResponseEntity.ok(Map.of("message", username + " supprimé avec succès"));
     }
 
     @PostMapping("/token/validate")
