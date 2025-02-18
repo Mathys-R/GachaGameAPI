@@ -36,6 +36,13 @@
             <div class="response" id="authResponse"></div>
         </div>
 
+        <!-- Player Section -->
+        <div class="endpoint">
+            <h2>Player</h2>
+            <button onclick="getAllPlayers()">Get All Players</button>
+            <div class="response" id="playerResponse"></div>
+        </div>
+
         <!-- Monsters Section -->
         <div class="endpoint">
             <h2>Monsters</h2>
@@ -68,6 +75,15 @@
             }
         }
 
+        async function getAllPlayers() {
+            try {
+                const response = await fetch('/api/player');
+                const data = await response.json();
+                document.getElementById('playerResponse').textContent = JSON.stringify(data, null, 2);
+            } catch (error) {
+                document.getElementById('playerResponse').textContent = error.message;
+            }
+        }
         async function getAllMonsters() {
             try {
                 const response = await fetch('/api/monsters');
