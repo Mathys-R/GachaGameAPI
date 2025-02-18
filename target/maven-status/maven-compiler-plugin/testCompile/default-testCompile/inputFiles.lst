@@ -1,2 +1,3 @@
-/home/bastien/Documents/WEB_API/GachaGameAPI/src/test/java/com/example/GachaGameAPI/GachaGameApiApplicationTests.java
-/home/bastien/Documents/WEB_API/GachaGameAPI/src/test/java/com/example/GachaGameAPI/monstre/MonstreControllerTest.java
+C:\Users\mathy\IdeaProjects\GachaGameAPI\src\test\java\com\imt\GachaGameAPI\GachaGameApiApplicationTests.java
+C:\Users\mathy\IdeaProjects\GachaGameAPI\src\test\java\com\imt\GachaGameAPI\monsters\EmbeddedMongoConfig.java
+C:\Users\mathy\IdeaProjects\GachaGameAPI\src\test\java\com\imt\GachaGameAPI\monsters\MonstersControllerTest.java
