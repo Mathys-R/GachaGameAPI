@@ -2,27 +2,29 @@ package com.imt.GachaGameAPI.auth.model;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
-import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document(collection = "users")
 public class User {
-
     @Id
-    private int id;
-
-    @Field("username")
+    private String id;
     private String username;
     private String password;
-    private AuthToken token;
+    private String token;
 
-    public User(String username, String password) {
+    public User() {}
+
+    public User(String username, String password, String token) {
         this.username = username;
         this.password = password;
-        this.token = null;
+        this.token = token;
     }
 
-    public int getId() {
+    public String getId() {
         return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getUsername() {
@@ -41,16 +43,11 @@ public class User {
         this.password = password;
     }
 
-    public AuthToken getToken() {
+    public String getToken() {
         return token;
     }
 
-    public void setToken(AuthToken token) {
+    public void setToken(String token) {
         this.token = token;
-    }
-
-    public void generateToken() {
-        AuthToken token = new AuthToken(this.id);
-        setToken(token);
     }
 }

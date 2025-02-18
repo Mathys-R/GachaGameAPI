@@ -1,49 +1,66 @@
 package com.imt.GachaGameAPI.auth.controller;
 
-import com.imt.GachaGameAPI.auth.dto.AuthRequestDTO;
-import com.imt.GachaGameAPI.auth.dto.AuthResponseDTO;
-import com.imt.GachaGameAPI.auth.dto.RegisterDTO;
+import com.imt.GachaGameAPI.auth.dto.TokenDTO;
+import com.imt.GachaGameAPI.auth.dto.UserDTO;
 import com.imt.GachaGameAPI.auth.service.UserService;
-import com.imt.GachaGameAPI.auth.model.User;
-
+import com.imt.GachaGameAPI.auth.service.TokenService;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
 public class AuthController {
-    private final UserService userService;
 
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
+    @Autowired
+    private UserService userService;
+
+    @Autowired
+    private TokenService tokenService;
 
     @PostMapping("/register")
-    public ResponseEntity<AuthResponseDTO> register(@RequestBody RegisterDTO registerDTO) {
-        User newUser = userService.registerUser(registerDTO.getUsername(), registerDTO.getPassword());
-
-        if (newUser.getToken() != null) {
-            return ResponseEntity.ok(new AuthResponseDTO(newUser.getToken().getToken()));
-        } else {
-            return ResponseEntity.status(500).body(new AuthResponseDTO(null));
-        }
+    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
+        UserDTO createdUser = userService.createUser(userDTO.getUsername(), userDTO.getPassword());
+        return ResponseEntity.ok(createdUser);
     }
 
-    @GetMapping("/")
-    public ResponseEntity<String> home() {
-        return ResponseEntity.ok("Bienvenue sur l'API d'authentification Auth !");
+    @PostMapping("/user")
+    public ResponseEntity<?> getUser(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        Optional<UserDTO> userDTO = userService.getUserByUsername(username);
+
+        return userDTO.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(404).body((UserDTO) Map.of("message", "Utilisateur non trouvé")));
     }
 
-    @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody AuthRequestDTO authRequestDTO) {
-        Optional<User> userOpt = userService.findByUsername(authRequestDTO.getUsername());
+    @PostMapping("/token")
+    public ResponseEntity<TokenDTO> generateToken(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        TokenDTO tokenDTO = tokenService.createToken(username);
+        return ResponseEntity.ok(tokenDTO);
+    }
 
-        if (userOpt.isPresent() && userOpt.get().getPassword().equals(authRequestDTO.getPassword())) {
-            return ResponseEntity.ok(new AuthResponseDTO(userOpt.get().getToken().getToken()));
-        } else {
-            return ResponseEntity.status(401).body(new AuthResponseDTO(null));
-        }
+    @PostMapping("/user/delete")
+    public ResponseEntity<Map<String, String>> deleteUser(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        userService.deleteUser(username);
+        return ResponseEntity.ok(Map.of("message", username + "supprimé avec succès"));
+    }
+
+    @PostMapping("/token/validate")
+    public ResponseEntity<Map<String, Boolean>> validateToken(@RequestBody Map<String, String> request) {
+        String tokenValue = request.get("tokenValue");
+        boolean isValid = tokenService.isTokenValid(tokenValue);
+        return ResponseEntity.ok(Map.of("isValid", isValid));
+    }
+
+    @PostMapping("/token/refresh")
+    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String, String> request) {
+        String token = request.get("token");
+        tokenService.refreshToken(token);
+        return ResponseEntity.ok(Map.of("message", "Token rafraîchi avec succès"));
     }
 }
