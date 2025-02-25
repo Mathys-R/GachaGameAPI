@@ -1,3 +1,5 @@
+Voici la documentation mise à jour pour correspondre au nouvel `AuthController` :
+
 # 📌 Documentation de l'API d'Authentification
 
 ## 📢 Introduction
@@ -8,8 +10,8 @@ Cette documentation décrit les différentes requêtes pouvant être effectuées
 ## 🚀 Endpoints disponibles
 
 ### 1️⃣ Enregistrer un utilisateur
-**URL:** `http://localhost:8081/auth/register`  
-**Méthode:** `POST`  
+**URL:** `http://localhost:8081/auth/register`
+**Méthode:** `POST`
 **Type de Body:** `application/json`
 
 #### 🔹 Corps de la requête
@@ -31,120 +33,43 @@ curl --location 'http://localhost:8081/auth/register' \
 
 ---
 
-### 2️⃣ Afficher un utilisateur
-**URL:** `http://localhost:8081/auth/user`  
-**Méthode:** `POST`  
-**Type de Body:** `application/json`
+### 2️⃣ Récupérer un utilisateur
+**URL:** `http://localhost:8081/auth/get/{username}`
+**Méthode:** `GET`
 
-#### 🔹 Corps de la requête
-```json
-{
-  "username": "testUser1"
-}
-```
 #### 🔹 Requête cURL
 ```sh
-curl --location 'http://localhost:8081/auth/user' \
---header 'Content-Type: application/json' \
---data '{
-  "username": "testUser1"
-}'
+curl --location 'http://localhost:8081/auth/get/testUser1'
 ```
 
 ---
 
-### 3️⃣ Générer un Token
-**URL:** `http://localhost:8081/auth/token`  
-**Méthode:** `POST`  
-**Type de Body:** `application/json`
+### 3️⃣ Supprimer un utilisateur
+**URL:** `http://localhost:8081/auth/delete/{username}`
+**Méthode:** `DELETE`
 
-#### 🔹 Corps de la requête
-```json
-{
-  "username": "testUser1"
-}
-```
 #### 🔹 Requête cURL
 ```sh
-curl --location 'http://localhost:8081/auth/token' \
---header 'Content-Type: application/json' \
---data '{
-  "username": "testUser1"
-}'
+curl --location --request DELETE 'http://localhost:8081/auth/delete/testUser1'
 ```
 
 ---
 
-### 4️⃣ Supprimer un utilisateur
-**URL:** `http://localhost:8081/auth/user/delete`  
-**Méthode:** `POST`  
-**Type de Body:** `application/json`
+### 4️⃣ Valider un token
+**URL:** `http://localhost:8081/auth/validate/{token}`
+**Méthode:** `GET`
+**Type de Paramètre:** Query parameter
 
-#### 🔹 Corps de la requête
-```json
-{
-  "username": "testUser1"
-}
-```
 #### 🔹 Requête cURL
 ```sh
-curl --location 'http://localhost:8081/auth/user/delete' \
---header 'Content-Type: application/json' \
---data '{
-  "username": "testUser1"
-}'
-```
-
----
-
-### 5️⃣ Vérifier la validité d'un Token
-**URL:** `http://localhost:8081/auth/token/validate`  
-**Méthode:** `POST`  
-**Type de Body:** `application/json`
-
-#### 🔹 Corps de la requête
-```json
-{
-  "tokenValue": "3d3472ab-b126-4413-b90e-972ae24a2423"
-}
-```
-#### 🔹 Requête cURL
-```sh
-curl --location 'http://localhost:8081/auth/token/validate' \
---header 'Content-Type: application/json' \
---data '{
-  "tokenValue": "3d3472ab-b126-4413-b90e-972ae24a2423"
-}'
-```
-
----
-
-### 6️⃣ Rafraîchir un Token
-**URL:** `http://localhost:8081/auth/token/refresh`  
-**Méthode:** `POST`  
-**Type de Body:** `application/json`
-
-#### 🔹 Corps de la requête
-```json
-{
-  "tokenValue": "3d3472ab-b126-4413-b90e-972ae24a2423"
-}
-```
-#### 🔹 Requête cURL
-```sh
-curl --location 'http://localhost:8081/auth/token/refresh' \
---header 'Content-Type: application/json' \
---data '{
-  "tokenValue": "3d3472ab-b126-4413-b90e-972ae24a2423"
-}'
+curl --location 'http://localhost:8081/auth/validate/123456789'
 ```
 
 ---
 
 ## 📌 Notes
-- Toutes les requêtes utilisent le format JSON.
-- Les tokens générés doivent être utilisés pour l'authentification des requêtes nécessitant un accès restreint.
-- En cas d'erreur, l'API renverra une réponse en JSON avec un message descriptif.
+- Les codes HTTP standards sont utilisés (200 pour succès, 404 pour non trouvé, etc.)
+- Le token est généré automatiquement lors de la création d'un utilisateur
+- Le token a une validité de 60 minutes à partir de la dernière utilisation
 
 🚀 **Bonne utilisation de l'API !** 🎯
-

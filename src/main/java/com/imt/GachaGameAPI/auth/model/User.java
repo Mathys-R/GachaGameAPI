@@ -1,53 +1,62 @@
 package com.imt.GachaGameAPI.auth.model;
 
+import lombok.Getter;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.Objects;
+
 @Document(collection = "users")
 public class User {
-    @Id
+    @Setter @Getter @Id
     private String id;
+    @Setter @Getter
     private String username;
+    @Setter @Getter
     private String password;
-    private String token;
+    private final String token;
+    private final LocalDateTime creationDate;
+    private LocalDateTime lastLoginDate;
 
-    public User() {}
-
-    public User(String username, String password, String token) {
+    public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.token = token;
+        this.creationDate = LocalDateTime.now();
+        this.lastLoginDate = creationDate;
+        this.token = generateToken();
     }
 
-    public String getId() {
-        return id;
+    public String generateToken() {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd-HH:mm:ss");
+        String token = username + creationDate.format(formatter);
+        return String.valueOf(Objects.hash(token));
     }
 
-    public void setId(String id) {
-        this.id = id;
-    }
-
-    public String getUsername() {
-        return username;
-    }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
+    public boolean isTokenValid() {
+        long minutesElapsed = ChronoUnit.MINUTES.between(lastLoginDate, LocalDateTime.now());
+        return minutesElapsed < 60;
     }
 
     public String getToken() {
-        return token;
+        if (isTokenValid()) {
+            lastLoginDate = LocalDateTime.now();
+            return token;
+        }
+        return null;
     }
 
-    public void setToken(String token) {
-        this.token = token;
+    public String toString() {
+         return "User{" +
+                 "id='" + id + '\'' +
+                ", username='" + username + '\'' +
+                ", password='" + password + '\'' +
+                ", token='" + token + '\'' +
+                ", creationDate=" + creationDate +
+                ", lastLoginDate=" + lastLoginDate +
+                '}';
     }
 }

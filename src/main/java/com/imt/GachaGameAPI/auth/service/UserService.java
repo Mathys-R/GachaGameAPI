@@ -5,6 +5,7 @@ import com.imt.GachaGameAPI.auth.dto.UserDTO;
 import com.imt.GachaGameAPI.auth.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -14,17 +15,29 @@ public class UserService {
     private UserDAO userDAO;
 
     public UserDTO createUser(String username, String password) {
-        User user = new User(username, password, null);
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("Username ne peut pas être vide");
+        }
+        if (userDAO.findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("Username déjà pris");
+        }
+        User user = new User(username, password);
         User savedUser = userDAO.save(user);
-        return new UserDTO(savedUser.getUsername(), savedUser.getPassword(), savedUser.getToken());
+        return new UserDTO(savedUser.getToken());
     }
 
-    public Optional<UserDTO> getUserByUsername(String username) {
+    public Optional<String> getUserByUsername(String username) {
         return userDAO.findByUsername(username)
-                .map(user -> new UserDTO(user.getUsername(), user.getPassword(), user.getToken()));
+                .map(User::toString);
     }
 
     public void deleteUser(String username) {
         userDAO.deleteByUsername(username);
+    }
+
+    public Optional<String> getUsernameFromToken(String token) {
+        return userDAO.findByToken(token)
+                .filter(User::isTokenValid)
+                .map(User::getUsername);
     }
 }
