@@ -53,4 +53,14 @@ public class AuthController {
                 .orElseGet(() -> ResponseEntity.status(401)
                         .body(Map.of("erreur", "Veuillez vous authentifier à nouveau").toString()));
     }
+
+    @PostMapping("/re-authenticate")
+    public ResponseEntity<?> reAuthenticate(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        String password = request.get("password");
+        return userService.reAuthenticateUser(username, password)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(401)
+                        .body(Map.of("erreur", "Veuillez vous authentifier à nouveau").toString()));
+    }
 }

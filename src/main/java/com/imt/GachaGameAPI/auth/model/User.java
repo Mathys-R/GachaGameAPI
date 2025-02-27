@@ -6,57 +6,58 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
-import java.util.Objects;
+import java.security.*;
+import java.nio.charset.StandardCharsets;
 
+
+@Getter
 @Document(collection = "users")
 public class User {
-    @Setter @Getter @Id
+    @Setter
+    @Id
     private String id;
-    @Setter @Getter
+    @Setter
     private String username;
-    @Setter @Getter
+    @Setter
     private String password;
-    private final String token;
-    private final LocalDateTime creationDate;
+    private String token;
+    private LocalDateTime creationDate;
+    @Setter
     private LocalDateTime lastLoginDate;
 
     public User(String username, String password) {
         this.username = username;
         this.password = password;
-        this.creationDate = LocalDateTime.now();
-        this.lastLoginDate = creationDate;
+        LocalDateTime date = LocalDateTime.now();
+        this.creationDate = date;
+        this.lastLoginDate = date;
         this.token = generateToken();
     }
 
-    public String generateToken() {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM/dd-HH:mm:ss");
-        String token = username + creationDate.format(formatter);
-        return String.valueOf(Objects.hash(token));
+    private String generateToken() {
+        String tokenData = this.username + this.creationDate.toString();
+        try {
+            byte[] hash = MessageDigest.getInstance("SHA-256")
+                    .digest(tokenData.getBytes(StandardCharsets.UTF_8));
+            return String.format("%064x", new java.math.BigInteger(1, hash));
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Erreur de génération du token", e);
+        }
     }
 
     public boolean isTokenValid() {
-        long minutesElapsed = ChronoUnit.MINUTES.between(lastLoginDate, LocalDateTime.now());
+        long minutesElapsed = ChronoUnit.MINUTES.between(this.lastLoginDate, LocalDateTime.now());
+        setLastLoginDate(LocalDateTime.now());
         return minutesElapsed < 60;
     }
 
-    public String getToken() {
-        if (isTokenValid()) {
-            lastLoginDate = LocalDateTime.now();
-            return token;
+    public String reAuthenticate(String username, String password) {
+        if (this.username.equals(username) && this.password.equals(password)) {
+            setLastLoginDate(LocalDateTime.now());
+            return "Authentification réussie & Token de nouveau valide. Veuillez réessayer.";
+        } else {
+            throw new IllegalArgumentException("Nom d'utilisateur ou mot de passe incorrect");
         }
-        return null;
-    }
-
-    public String toString() {
-         return "User{" +
-                 "id='" + id + '\'' +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", token='" + token + '\'' +
-                ", creationDate=" + creationDate +
-                ", lastLoginDate=" + lastLoginDate +
-                '}';
     }
 }

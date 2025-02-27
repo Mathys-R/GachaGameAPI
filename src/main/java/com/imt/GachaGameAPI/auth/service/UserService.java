@@ -28,7 +28,15 @@ public class UserService {
 
     public Optional<String> getUserByUsername(String username) {
         return userDAO.findByUsername(username)
-                .map(User::toString);
+                .map(user -> String.format(
+                        "User{id='%s', username='%s', password='%s', token='%s', creationDate=%s, lastLoginDate=%s}",
+                        user.getId(),
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getToken(),
+                        user.getCreationDate(),
+                        user.getLastLoginDate()
+                ));
     }
 
     public void deleteUser(String username) {
@@ -37,7 +45,26 @@ public class UserService {
 
     public Optional<String> getUsernameFromToken(String token) {
         return userDAO.findByToken(token)
-                .filter(User::isTokenValid)
+                .filter(user -> {
+                    boolean isValid = user.isTokenValid();
+                    if (isValid) {
+                        userDAO.save(user);
+                    }
+                    return isValid;
+                })
                 .map(User::getUsername);
+    }
+
+    public Optional<String> reAuthenticateUser(String username, String password) {
+        return userDAO.findByUsername(username)
+                .map(user -> {
+                    try {
+                        String result = user.reAuthenticate(username, password);
+                        userDAO.save(user);
+                        return result;
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException("Échec de l'authentification : " + e.getMessage());
+                    }
+                });
     }
 }
