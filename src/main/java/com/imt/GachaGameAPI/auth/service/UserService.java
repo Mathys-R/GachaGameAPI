@@ -16,10 +16,13 @@ public class UserService {
 
     public UserDTO createUser(String username, String password) {
         if (username == null || username.trim().isEmpty()) {
-            throw new IllegalArgumentException("Username ne peut pas être vide");
+            throw new IllegalArgumentException("'Username' ne peut pas être vide");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("'Password' ne peut pas être vide");
         }
         if (userDAO.findByUsername(username).isPresent()) {
-            throw new IllegalArgumentException("Username déjà pris");
+            throw new IllegalArgumentException("Le nom d'utilisateur est déjà pris");
         }
         User user = new User(username, password);
         User savedUser = userDAO.save(user);
@@ -43,18 +46,6 @@ public class UserService {
         userDAO.deleteByUsername(username);
     }
 
-    public Optional<String> getUsernameFromToken(String token) {
-        return userDAO.findByToken(token)
-                .filter(user -> {
-                    boolean isValid = user.isTokenValid();
-                    if (isValid) {
-                        userDAO.save(user);
-                    }
-                    return isValid;
-                })
-                .map(User::getUsername);
-    }
-
     public Optional<String> reAuthenticateUser(String username, String password) {
         return userDAO.findByUsername(username)
                 .map(user -> {
@@ -66,5 +57,13 @@ public class UserService {
                         throw new IllegalArgumentException("Échec de l'authentification : " + e.getMessage());
                     }
                 });
+    }
+
+    public Optional<User> findUserByToken(String token) {
+        return userDAO.findByToken(token);
+    }
+
+    public void saveUser(User user) {
+        userDAO.save(user);
     }
 }
