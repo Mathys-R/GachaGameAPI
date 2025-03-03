@@ -1,5 +1,6 @@
 package com.imt.GachaGameAPI.player.controller;
 
+import com.imt.GachaGameAPI.monsters.model.Monsters;
 import com.imt.GachaGameAPI.player.dto.PlayerJsonDto;
 import com.imt.GachaGameAPI.player.model.Player;
 import com.imt.GachaGameAPI.player.service.PlayerService;
@@ -42,7 +43,7 @@ public class PlayerController {
 
     @GetMapping("/allPlayers")
     public ResponseEntity<List<PlayerJsonDto>> getAllPlayers() {
-        List<PlayerJsonDto> players = playerService.findAllPlayers()
+        List<PlayerJsonDto> players = playerService.getAllPlayers()
             .stream()
             .map(player -> new PlayerJsonDto(
                 player.getId(),
@@ -54,6 +55,13 @@ public class PlayerController {
 
         return ResponseEntity.ok(players);
     }
+
+    // @GetMapping("/allPlayers")
+    // public ResponseEntity<List<Player>> getAllPlayers() {
+    //     // return ResponseEntity.ok("test");
+    //     List<Player> players = playerService.getAllPlayers();
+    //     return ResponseEntity.ok(players);
+    // }
 
     @GetMapping("/{id}")
     public ResponseEntity<List<PlayerJsonDto>> getPlayers(@PathVariable int id) {

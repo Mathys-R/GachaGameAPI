@@ -27,7 +27,7 @@ public class Player {
         this.id = id;
         this.level = level;
         this.experience = experience;
-        this.inventory = inventory;
+        this.inventory = (inventory != null) ? inventory : new ArrayList<>();
     }
 
     public Player(int id) {
