@@ -1,111 +1,84 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
-    <title>Gacha Game API Tester</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gacha Game Player API Tester</title>
     <style>
         .container {
             max-width: 800px;
             margin: 0 auto;
             padding: 20px;
+            font-family: Arial, sans-serif;
         }
         .endpoint {
             border: 1px solid #ddd;
             margin: 10px 0;
             padding: 15px;
+            border-radius: 5px;
+            background-color: #fafafa;
         }
         .response {
             background-color: #f5f5f5;
             padding: 10px;
             margin-top: 10px;
             white-space: pre-wrap;
+            border-radius: 5px;
+        }
+        button {
+            cursor: pointer;
+            padding: 8px 12px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #0056b3;
         }
     </style>
 </head>
 <body>
+
     <div class="container">
-        <h1>Gacha Game API Tester</h1>
-        
-        <!-- Auth Section -->
-        <div class="endpoint">
-            <h2>Authentication</h2>
-            <div>
-                <input type="text" id="username" placeholder="Username">
-                <input type="password" id="password" placeholder="Password">
-                <button onclick="login()">Login</button>
-            </div>
-            <div class="response" id="authResponse"></div>
-        </div>
+        <h1>Gacha Game Player API Tester</h1>
 
-        <!-- Player Section -->
         <div class="endpoint">
-            <h2>Player</h2>
-            <button onclick="getAllPlayers()">Get All Players</button>
-            <div class="response" id="playerResponse"></div>
-        </div>
-
-        <!-- Monsters Section -->
-        <div class="endpoint">
-            <h2>Monsters</h2>
-            <button onclick="getAllMonsters()">Get All Monsters</button>
-            <div class="response" id="monstersResponse"></div>
-        </div>
-
-        <!-- Summon Section -->
-        <div class="endpoint">
-            <h2>Summon</h2>
-            <button onclick="summonMonster()">Summon Monster</button>
-            <div class="response" id="summonResponse"></div>
+            <h2>Player Info</h2>
+            <button id="btnGetPlayers">Récupérer tous les joueurs</button>
+            <div class="response" id="playerResponse">Waiting for response...</div>
         </div>
     </div>
 
     <script>
-        async function login() {
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
+        const API_URL = "http://localhost:8082"; // Assurez-vous que l'API de Player fonctionne sur ce port
+
+        async function fetchAPI(endpoint, method = "GET", body = null) {
+            const url = `${API_URL}${endpoint}`;
             try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
+                const response = await fetch(url, {
+                    method,
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ username, password })
+                    body: body ? JSON.stringify(body) : null
                 });
-                const data = await response.json();
-                document.getElementById('authResponse').textContent = JSON.stringify(data, null, 2);
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                return await response.json();
             } catch (error) {
-                document.getElementById('authResponse').textContent = error.message;
+                console.error("Erreur:", error);
+                return { error: `Erreur API Player: ${error.message}` };
             }
         }
 
-        async function getAllPlayers() {
-            try {
-                const response = await fetch('/api/player');
-                const data = await response.json();
-                document.getElementById('playerResponse').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('playerResponse').textContent = error.message;
-            }
-        }
-        async function getAllMonsters() {
-            try {
-                const response = await fetch('/api/monsters');
-                const data = await response.json();
-                document.getElementById('monstersResponse').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('monstersResponse').textContent = error.message;
-            }
-        }
-
-        async function summonMonster() {
-            try {
-                const response = await fetch('/api/summon', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' }
-                });
-                const data = await response.json();
-                document.getElementById('summonResponse').textContent = JSON.stringify(data, null, 2);
-            } catch (error) {
-                document.getElementById('summonResponse').textContent = error.message;
-            }
-        }
+        document.getElementById("btnGetPlayers").addEventListener("click", async () => {
+            const data = await fetchAPI("/player/");
+            document.getElementById("playerResponse").innerText = JSON.stringify(data, null, 2);
+        });
     </script>
+
 </body>
 </html>

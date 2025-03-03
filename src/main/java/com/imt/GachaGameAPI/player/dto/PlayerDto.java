@@ -24,6 +24,34 @@ public class PlayerDto {
         this.experience = experience;
         this.inventory = inventory;
     }
+
+    public int getId() {
+        return id;
+    }
+
+    public int getLevel() {
+        return level;
+    }
+
+    public int getExperience() {
+        return experience;
+    }
+
+    public List<String> getInventory() {
+        return inventory;
+    }
+
+    
+    @Override
+    public String toString() {
+        return "PlayerDto{" +
+            "id='" + id + '\'' +
+            ", level=" + level +
+            ", experience='" + experience + '\'' +
+            ", inventory='" + inventory + '\'' +
+            '}';
+    }
+
 }
 
 
