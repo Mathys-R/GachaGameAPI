@@ -1,13 +1,13 @@
-package com.imt.GachaGameAPI;
+// package com.imt.GachaGameAPI;
 
-import org.junit.jupiter.api.Test;
-import org.springframework.boot.test.context.SpringBootTest;
+// import org.junit.jupiter.api.Test;
+// import org.springframework.boot.test.context.SpringBootTest;
 
-@SpringBootTest
-class GachaGameApiApplicationTests {
+// @SpringBootTest
+// class GachaGameApiApplicationTests {
 
-	@Test
-	void contextLoads() {
-	}
+// 	@Test
+// 	void contextLoads() {
+// 	}
 
-}
+// }

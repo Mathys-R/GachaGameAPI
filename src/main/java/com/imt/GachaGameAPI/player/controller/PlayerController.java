@@ -1,16 +1,22 @@
 package com.imt.GachaGameAPI.player.controller;
 
-import com.imt.GachaGameAPI.player.dto.PlayerDto;
+import com.imt.GachaGameAPI.player.dto.PlayerJsonDto;
 import com.imt.GachaGameAPI.player.model.Player;
 import com.imt.GachaGameAPI.player.service.PlayerService;
 
 import jakarta.validation.Valid;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.DeleteMapping;
+
 
 @RestController
 @RequestMapping("/player")
@@ -22,18 +28,23 @@ public class PlayerController {
         this.playerService = playerService;
     }
     
-
     @PostMapping("/save")
-    public ResponseEntity<String> createPlayer(@Valid @RequestBody Player player) {
-        playerService.savePlayer(player);
-        return ResponseEntity.ok("Player saved!");
+    public ResponseEntity<String> createPlayer(@Valid @RequestBody PlayerJsonDto player) {
+        playerService.savePlayer(
+            new Player(
+                player.getId(), 
+                player.getLevel(), 
+                player.getExperience(), 
+                player.getInventory())
+        );
+        return ResponseEntity.ok("saved !");
     }
 
-    @GetMapping("/")
-    public ResponseEntity<List<PlayerDto>> getAllPlayers() {
-        List<PlayerDto> players = playerService.findAllPlayers()
+    @GetMapping("/allPlayers")
+    public ResponseEntity<List<PlayerJsonDto>> getAllPlayers() {
+        List<PlayerJsonDto> players = playerService.findAllPlayers()
             .stream()
-            .map(player -> new PlayerDto(
+            .map(player -> new PlayerJsonDto(
                 player.getId(),
                 player.getLevel(),
                 player.getExperience(),  
@@ -45,9 +56,17 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<Player> getPlayer(@PathVariable int id) {
-        Optional<Player> player = playerService.findPlayerById(id);
-        return player.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+    public ResponseEntity<List<PlayerJsonDto>> getPlayers(@PathVariable int id) {
+        List<PlayerJsonDto> playerById = playerService.findPlayerById(id)
+            .stream()
+            .map(player -> new PlayerJsonDto(
+                player.getId(), 
+                player.getLevel(), 
+                player.getExperience(), 
+                player.getInventory()))
+            .toList();
+
+        return ResponseEntity.ok(playerById);
     }
 
     @PostMapping("/{id}/add-xp/{xp}")

@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gacha Game Player API Tester</title>
+    <style>
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+        }
+        .endpoint {
+            border: 1px solid #ddd;
+            margin: 10px 0;
+            padding: 15px;
+            border-radius: 5px;
+            background-color: #fafafa;
+        }
+        .response {
+            background-color: #f5f5f5;
+            padding: 10px;
+            margin-top: 10px;
+            white-space: pre-wrap;
+            border-radius: 5px;
+        }
+        button {
+            cursor: pointer;
+            padding: 8px 12px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Gacha Game Player API Tester</h1>
+
+        <div class="endpoint">
+            <h2>Player Info</h2>
+            <button id="btnGetPlayers">Récupérer tous les joueurs</button>
+            <div class="response" id="playerResponse">Waiting for response...</div>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = "http://localhost:8082"; // Assurez-vous que l'API de Player fonctionne sur ce port
+
+        async function fetchAPI(endpoint, method = "GET", body = null) {
+            const url = `${API_URL}${endpoint}`;
+            try {
+                const response = await fetch(url, {
+                    method,
+                    headers: { 'Content-Type': 'application/json' },
+                    body: body ? JSON.stringify(body) : null
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! Status: ${response.status}`);
+                }
+
+                return await response.json();
+            } catch (error) {
+                console.error("Erreur:", error);
+                return { error: `Erreur API Player: ${error.message}` };
+            }
+        }
+
+        document.getElementById("btnGetPlayers").addEventListener("click", async () => {
+            const data = await fetchAPI("/player/allPlayers");
+            document.getElementById("playerResponse").innerText = JSON.stringify(data, null, 2);
+        });
+    </script>
+
+</body>
+</html>

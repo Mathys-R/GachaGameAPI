@@ -1,5 +1,6 @@
 package com.imt.GachaGameAPI.player.model;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -12,9 +13,8 @@ import lombok.Setter;
 
 @Setter
 @Getter
-@Document(collection = "players")
+@Document(collection = "player")
 @NoArgsConstructor
-@AllArgsConstructor
 public class Player {
     
     @MongoId
@@ -22,6 +22,20 @@ public class Player {
     private int level;
     private int experience;
     private List<String> inventory; // Stocke les IDs des monstres
+    
+    public Player(int id, int level, int experience, List<String> inventory) {
+        this.id = id;
+        this.level = level;
+        this.experience = experience;
+        this.inventory = inventory;
+    }
+
+    public Player(int id) {
+        this.id = id;
+        this.level = 0;
+        this.experience = 0;
+        this.inventory = new ArrayList<String>();
+    }
 
     public int getXpThreshold() {
         return (int) (50 * Math.pow(1.1, level - 1));
