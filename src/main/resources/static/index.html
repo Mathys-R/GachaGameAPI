@@ -3,82 +3,137 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gacha Game Player API Tester</title>
-    <style>
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
-        .endpoint {
-            border: 1px solid #ddd;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 5px;
-            background-color: #fafafa;
-        }
-        .response {
-            background-color: #f5f5f5;
-            padding: 10px;
-            margin-top: 10px;
-            white-space: pre-wrap;
-            border-radius: 5px;
-        }
-        button {
-            cursor: pointer;
-            padding: 8px 12px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-    </style>
+    <title>Gacha Game API Dashboard</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
     <div class="container">
-        <h1>Gacha Game Player API Tester</h1>
-
-        <div class="endpoint">
-            <h2>Player Info</h2>
+        <div class="card" id="player-section">
+            <h2>Player API</h2>
             <button id="btnGetPlayers">Récupérer tous les joueurs</button>
+            <button id="btnGetPlayerById">Rechercher un joueur par ID</button>
+            <input type="number" id="playerId" placeholder="ID du joueur">
+            <button id="btnAddXP">Ajouter XP</button>
+            <input type="number" id="xpAmount" placeholder="XP à ajouter">
+            <button id="btnAddMonster">Ajouter Monstre</button>
+            <input type="text" id="monsterId" placeholder="ID du monstre">
+            <button id="btnRemoveMonster">Supprimer Monstre</button>
             <div class="response" id="playerResponse">Waiting for response...</div>
         </div>
+    
+        <div class="card" id="monsters-section">
+            <h2>Monsters API</h2>
+            <button id="btnGetMonsters">Récupérer tous les monstres</button>
+            <button id="btnGetMonsterById">Rechercher un monstre par ID</button>
+            <input type="text" id="monsterIdInput" placeholder="ID du monstre">
+            <!-- <button id="btnCreateMonster">Créer un monstre</button>
+            <button id="btnUpdateMonster">Mettre à jour un monstre</button> -->
+            <button id="btnDeleteMonster">Supprimer un monstre</button>
+            <div class="response" id="monstersResponse">Waiting for response...</div>
+        </div>
     </div>
+    
 
     <script>
-        const API_URL = "http://localhost:8082"; // Assurez-vous que l'API de Player fonctionne sur ce port
-
-        async function fetchAPI(endpoint, method = "GET", body = null) {
-            const url = `${API_URL}${endpoint}`;
+        const API_URL_MONSTERS = "http://localhost:8083/monsters";
+        const API_URL_PLAYER = "http://localhost:8082/player";
+    
+        async function fetchMonstersAPI(endpoint, method = "GET", body = null) {
+            const url = `${API_URL_MONSTERS}${endpoint}`;
+            return fetchAPI(url, method, body, "monstersResponse");
+        }
+    
+        async function fetchPlayerAPI(endpoint, method = "GET", body = null) {
+            const url = `${API_URL_PLAYER}${endpoint}`;
+            return fetchAPI(url, method, body, "playerResponse");
+        }
+    
+        async function fetchAPI(url, method, body, responseElementId) {
             try {
                 const response = await fetch(url, {
                     method,
                     headers: { 'Content-Type': 'application/json' },
                     body: body ? JSON.stringify(body) : null
                 });
-
+    
                 if (!response.ok) {
                     throw new Error(`HTTP error! Status: ${response.status}`);
                 }
-
-                return await response.json();
+    
+                const data = await response.json();
+                document.getElementById(responseElementId).innerText = JSON.stringify(data, null, 2);
+                return data;
             } catch (error) {
                 console.error("Erreur:", error);
-                return { error: `Erreur API Player: ${error.message}` };
+                document.getElementById(responseElementId).innerText = `Erreur API : ${error.message}`;
             }
         }
-
+    
+        // API MONSTERS
+        document.getElementById("btnGetMonsters").addEventListener("click", async () => {
+            await fetchMonstersAPI("/");
+        });
+    
+        document.getElementById("btnGetMonsterById").addEventListener("click", async () => {
+            const id = document.getElementById("monsterIdInput").value;
+            if (id) await fetchMonstersAPI(`/${id}`);
+        });
+    
+        // document.getElementById("btnCreateMonster").addEventListener("click", async () => {
+        //     const monster = { name: "Nouveau Monstre", level: 1 };
+        //     await fetchMonstersAPI("/", "POST", monster);
+        // });
+    
+        // document.getElementById("btnUpdateMonster").addEventListener("click", async () => {
+        //     const id = document.getElementById("monsterIdInput").value;
+        //     if (id) {
+        //         const monster = { name: "Monstre Modifié", level: 5 };
+        //         await fetchMonstersAPI(`/${id}`, "PUT", monster);
+        //     }
+        // });
+    
+        document.getElementById("btnDeleteMonster").addEventListener("click", async () => {
+            const id = document.getElementById("monsterIdInput").value;
+            if (id) {
+                await fetchMonstersAPI(`/${id}`, "DELETE");
+                document.getElementById("monstersResponse").innerText = "Monstre supprimé avec succès";
+            }
+        });
+    
+        // API PLAYER
         document.getElementById("btnGetPlayers").addEventListener("click", async () => {
-            const data = await fetchAPI("/player/allPlayers");
-            document.getElementById("playerResponse").innerText = JSON.stringify(data, null, 2);
+            await fetchPlayerAPI("/");
+        });
+    
+        document.getElementById("btnGetPlayerById").addEventListener("click", async () => {
+            const id = document.getElementById("playerId").value;
+            if (id) await fetchPlayerAPI(`/${id}`);
+        });
+    
+        document.getElementById("btnAddXP").addEventListener("click", async () => {
+            const id = document.getElementById("playerId").value;
+            const xp = document.getElementById("xpAmount").value;
+            if (id && xp) {
+                await fetchPlayerAPI(`/${id}/xp`, "POST", { amount: parseInt(xp) });
+            }
+        });
+    
+        document.getElementById("btnAddMonster").addEventListener("click", async () => {
+            const playerId = document.getElementById("playerId").value;
+            const monsterId = document.getElementById("monsterId").value;
+            if (playerId && monsterId) {
+                await fetchPlayerAPI(`/${playerId}/monsters`, "POST", { monsterId });
+            }
+        });
+    
+        document.getElementById("btnRemoveMonster").addEventListener("click", async () => {
+            const playerId = document.getElementById("playerId").value;
+            const monsterId = document.getElementById("monsterId").value;
+            if (playerId && monsterId) {
+                await fetchPlayerAPI(`/${playerId}/monsters/${monsterId}`, "DELETE");
+            }
         });
     </script>
-
+    
 </body>
 </html>

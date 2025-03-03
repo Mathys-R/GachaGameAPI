@@ -9,6 +9,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/monsters")
+@CrossOrigin(origins = "http://localhost:8080")  // Enable CORS for specific controller
 public class MonstersController {
 
     @Autowired
