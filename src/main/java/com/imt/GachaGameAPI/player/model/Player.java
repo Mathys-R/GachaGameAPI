@@ -11,24 +11,19 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.util.UUID;
-
 @Setter
 @Getter
 @Document(collection = "player")
 @NoArgsConstructor
-@AllArgsConstructor
 public class Player {
     
     @MongoId
-    private UUID _id;
     private int id;
     private int level;
     private int experience;
     private List<String> inventory; // Stocke les IDs des monstres
     
     public Player(int id, int level, int experience, List<String> inventory) {
-        this._id = UUID.randomUUID();
         this.id = id;
         this.level = level;
         this.experience = experience;
@@ -36,7 +31,6 @@ public class Player {
     }
 
     public Player(int id) {
-        this._id = UUID.randomUUID();
         this.id = id;
         this.level = 0;
         this.experience = 0;

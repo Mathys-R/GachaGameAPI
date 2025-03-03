@@ -75,7 +75,7 @@
         }
 
         document.getElementById("btnGetPlayers").addEventListener("click", async () => {
-            const data = await fetchAPI("/player/");
+            const data = await fetchAPI("/player/allPlayers");
             document.getElementById("playerResponse").innerText = JSON.stringify(data, null, 2);
         });
     </script>
