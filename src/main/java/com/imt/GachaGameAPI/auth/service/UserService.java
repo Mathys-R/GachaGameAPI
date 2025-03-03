@@ -5,6 +5,7 @@ import com.imt.GachaGameAPI.auth.dto.UserDTO;
 import com.imt.GachaGameAPI.auth.model.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.Optional;
 
 @Service
@@ -14,17 +15,55 @@ public class UserService {
     private UserDAO userDAO;
 
     public UserDTO createUser(String username, String password) {
-        User user = new User(username, password, null);
+        if (username == null || username.trim().isEmpty()) {
+            throw new IllegalArgumentException("'Username' ne peut pas être vide");
+        }
+        if (password == null || password.trim().isEmpty()) {
+            throw new IllegalArgumentException("'Password' ne peut pas être vide");
+        }
+        if (userDAO.findByUsername(username).isPresent()) {
+            throw new IllegalArgumentException("Le nom d'utilisateur est déjà pris");
+        }
+        User user = new User(username, password);
         User savedUser = userDAO.save(user);
-        return new UserDTO(savedUser.getUsername(), savedUser.getPassword(), savedUser.getToken());
+        return new UserDTO(savedUser.getToken());
     }
 
-    public Optional<UserDTO> getUserByUsername(String username) {
+    public Optional<String> getUserByUsername(String username) {
         return userDAO.findByUsername(username)
-                .map(user -> new UserDTO(user.getUsername(), user.getPassword(), user.getToken()));
+                .map(user -> String.format(
+                        "User{id='%s', username='%s', password='%s', token='%s', creationDate=%s, lastLoginDate=%s}",
+                        user.getId(),
+                        user.getUsername(),
+                        user.getPassword(),
+                        user.getToken(),
+                        user.getCreationDate(),
+                        user.getLastLoginDate()
+                ));
     }
 
     public void deleteUser(String username) {
         userDAO.deleteByUsername(username);
+    }
+
+    public Optional<String> reAuthenticateUser(String username, String password) {
+        return userDAO.findByUsername(username)
+                .map(user -> {
+                    try {
+                        String result = user.reAuthenticate(username, password);
+                        userDAO.save(user);
+                        return result;
+                    } catch (IllegalArgumentException e) {
+                        throw new IllegalArgumentException("Échec de l'authentification : " + e.getMessage());
+                    }
+                });
+    }
+
+    public Optional<User> findUserByToken(String token) {
+        return userDAO.findByToken(token);
+    }
+
+    public void saveUser(User user) {
+        userDAO.save(user);
     }
 }

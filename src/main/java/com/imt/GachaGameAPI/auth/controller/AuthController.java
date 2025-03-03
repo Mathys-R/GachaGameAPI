@@ -1,9 +1,8 @@
 package com.imt.GachaGameAPI.auth.controller;
 
-import com.imt.GachaGameAPI.auth.dto.TokenDTO;
 import com.imt.GachaGameAPI.auth.dto.UserDTO;
+import com.imt.GachaGameAPI.auth.model.User;
 import com.imt.GachaGameAPI.auth.service.UserService;
-import com.imt.GachaGameAPI.auth.service.TokenService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -18,49 +17,87 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
-    @Autowired
-    private TokenService tokenService;
-
     @PostMapping("/register")
-    public ResponseEntity<UserDTO> registerUser(@RequestBody UserDTO userDTO) {
-        UserDTO createdUser = userService.createUser(userDTO.getUsername(), userDTO.getPassword());
-        return ResponseEntity.ok(createdUser);
+    public ResponseEntity<?> registerUser(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        String password = request.get("password");
+
+        try {
+            UserDTO createdUser = userService.createUser(username, password);
+            return ResponseEntity.ok(createdUser);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("Erreur", e.getMessage()));
+        }
     }
 
-    @PostMapping("/user")
-    public ResponseEntity<?> getUser(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
-        Optional<UserDTO> userDTO = userService.getUserByUsername(username);
-
-        return userDTO.map(ResponseEntity::ok)
-                .orElseGet(() -> ResponseEntity.status(404).body((UserDTO) Map.of("message", "Utilisateur non trouvé")));
+    @GetMapping("/get/{username}")
+    public ResponseEntity<?> getUser(@PathVariable String username) {
+        if (username.trim().isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("Erreur", "Le nom d'utilisateur ne peut pas être vide"));
+        }
+        Optional<String> userInfo = userService.getUserByUsername(username);
+        return userInfo.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(404)
+                        .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas").toString()));
     }
 
-    @PostMapping("/token")
-    public ResponseEntity<TokenDTO> generateToken(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
-        TokenDTO tokenDTO = tokenService.createToken(username);
-        return ResponseEntity.ok(tokenDTO);
-    }
-
-    @PostMapping("/user/delete")
-    public ResponseEntity<Map<String, String>> deleteUser(@RequestBody Map<String, String> request) {
-        String username = request.get("username");
+    @DeleteMapping({"/delete/{username}", "/delete/"})
+    public ResponseEntity<Map<String, String>> deleteUser(@PathVariable(required = false) String username) {
+        if (username == null || username.trim().isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("Erreur", "Le nom d'utilisateur ne peut pas être vide"));
+        }
+        if (userService.getUserByUsername(username).isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas"));
+        }
         userService.deleteUser(username);
-        return ResponseEntity.ok(Map.of("message", username + "supprimé avec succès"));
+        return ResponseEntity.ok(Map.of("Succès", "Utilisateur " + username + " supprimé avec succès"));
     }
 
-    @PostMapping("/token/validate")
-    public ResponseEntity<Map<String, Boolean>> validateToken(@RequestBody Map<String, String> request) {
-        String tokenValue = request.get("tokenValue");
-        boolean isValid = tokenService.isTokenValid(tokenValue);
-        return ResponseEntity.ok(Map.of("isValid", isValid));
+    @GetMapping({"/validate/{token}", "/validate/"})
+    public ResponseEntity<?> validateToken(@PathVariable(required = false) String token) {
+        if (token == null || token.trim().isEmpty()) {
+            return ResponseEntity.badRequest()
+                    .body(Map.of("Erreur", "Le token ne peut pas être vide"));
+        }
+
+        Optional<User> userOpt = userService.findUserByToken(token);
+
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(404)
+                    .body(Map.of("Erreur", "Token inexistant : Ce token n'existe pas"));
+        }
+
+        User user = userOpt.get();
+        if (!user.isTokenValid()) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("Erreur", "Token expiré : Veuillez vous authentifier à nouveau"));
+        }
+
+        userService.saveUser(user);
+        return ResponseEntity.ok(user.getUsername());
     }
 
-    @PostMapping("/token/refresh")
-    public ResponseEntity<Map<String, String>> refreshToken(@RequestBody Map<String, String> request) {
-        String token = request.get("token");
-        tokenService.refreshToken(token);
-        return ResponseEntity.ok(Map.of("message", "Token rafraîchi avec succès"));
+    @PostMapping("/re-authenticate")
+    public ResponseEntity<?> reAuthenticate(@RequestBody Map<String, String> request) {
+        String username = request.get("username");
+        String password = request.get("password");
+
+        if (username.trim().isEmpty() || password.trim().isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("Erreur", "Username et password sont requis"));
+        }
+
+        try {
+            Optional<String> result = userService.reAuthenticateUser(username, password);
+            return result.<ResponseEntity<?>>map(s -> ResponseEntity.ok(Map.of("Succès", s))).orElseGet(() -> ResponseEntity.status(404)
+                    .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas")));
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(401)
+                    .body(Map.of("Erreur", e.getMessage()));
+        }
     }
 }
