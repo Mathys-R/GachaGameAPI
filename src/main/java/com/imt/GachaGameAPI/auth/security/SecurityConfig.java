@@ -18,7 +18,7 @@ public class SecurityConfig {
     private JwtAuthFilter jwtAuthFilter;
 
 
-@Bean
+    @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .csrf(AbstractHttpConfigurer::disable)
