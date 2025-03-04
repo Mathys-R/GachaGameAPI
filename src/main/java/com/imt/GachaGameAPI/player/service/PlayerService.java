@@ -2,6 +2,7 @@ package com.imt.GachaGameAPI.player.service;
 
 import java.util.List;
 
+import com.imt.GachaGameAPI.monsters.model.Monsters;
 import com.imt.GachaGameAPI.player.dao.PlayerDao;
 import com.imt.GachaGameAPI.player.model.Player;
 import org.springframework.stereotype.Service;
@@ -19,10 +20,10 @@ public class PlayerService {
         playerDao.save(player);
     }
 
-    public List<Player> findAllPlayers() {
+    public List<Player> getAllPlayers() {
         return playerDao.findAll();
     }
-
+    
     public List<Player> findPlayerById(int id) {
         return playerDao.findOneById(id);
     }

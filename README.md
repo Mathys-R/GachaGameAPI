@@ -17,3 +17,10 @@ TODO - description du projet
 2. Lancez la commande suivante :
    ```bash
    docker-compose up --build
+
+
+## Scenario d'exemple
+- Creation d'un User pour l'authentification
+- Creation de plusieurs Monsters
+- Creation de plusieurs Players
+- Invocations avec Summon

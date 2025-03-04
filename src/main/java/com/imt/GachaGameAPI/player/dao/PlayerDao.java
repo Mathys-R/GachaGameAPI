@@ -12,7 +12,6 @@ import java.util.List;
 @Repository
 public interface PlayerDao extends MongoRepository<Player, String> {
     
-    // @Query("{ 'id' : ?0 }") 
     List<Player> findOneById(int id);
 
 }
