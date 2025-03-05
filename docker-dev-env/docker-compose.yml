@@ -29,10 +29,10 @@ services:
     restart: on-failure
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
-      interval: 5s
+      interval: 60s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 30s
 
   # API Authentication service
   api-auth:
@@ -71,10 +71,10 @@ services:
     restart: on-failure
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
-      interval: 5s
+      interval: 60s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 30s
 
   # API Player service
   api-player:
@@ -113,10 +113,10 @@ services:
     restart: on-failure
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
-      interval: 5s
+      interval: 60s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 30s
 
   # API Monsters service
   api-monsters:
@@ -157,10 +157,10 @@ services:
     restart: on-failure
     healthcheck:
       test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
-      interval: 5s
+      interval: 60s
       timeout: 5s
       retries: 5
-      start_period: 10s
+      start_period: 30s
 
   # API Summon service
   api-summon:
