@@ -67,4 +67,16 @@ public class PlayerService {
         return false; // Retourne false si aucun joueur n'est trouvé ou si la suppression échoue
     }
     
+    public boolean removeAllPlayers() {
+        List<Player> players = getAllPlayers();
+    
+        if (!players.isEmpty()) { // Vérifie s'il y a des joueurs à supprimer
+            for (Player player : players) {
+                playerDao.delete(player); // Supprime chaque joueur
+            }
+            return true;
+        }
+        return false; // Retourne false si aucun joueur n'est trouvé
+    }
+    
 }

@@ -5,11 +5,14 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import com.imt.GachaGameAPI.monsters.model.Monsters;
 import com.imt.GachaGameAPI.monsters.service.MonstersService;
+
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+
 import java.util.List;
 
 @RestController
 @RequestMapping("/monsters")
-@CrossOrigin(origins = "http://localhost:8080")  // Enable CORS for specific controller
+@SecurityRequirement(name = "bearerAuth") 
 public class MonstersController {
 
     @Autowired

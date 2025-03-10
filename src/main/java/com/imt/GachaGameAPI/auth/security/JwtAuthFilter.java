@@ -20,7 +20,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     private static final List<String> AUTH_WHITELIST = Arrays.asList(
             "/auth/login",
             "/auth/register",
-            "/auth/validate"
+            "/auth/validate",
+            "/v3/api-docs/**", 
+            "/swagger-ui/**",
+            "/swagger-ui.html"
     );
     @Autowired
     private UserService userService;

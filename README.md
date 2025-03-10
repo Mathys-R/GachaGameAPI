@@ -10,12 +10,12 @@ TODO - description du projet
 
 ## Prérequis
 - Docker
-- Docker Compose
 
 ## Lancer le projet
 1. Clonez ce dépôt.
-2. Lancez la commande suivante :
+2. Lancez les deux commandes suivantes :
    ```bash
+   cd docker-dev-env
    docker-compose up --build
 
 
