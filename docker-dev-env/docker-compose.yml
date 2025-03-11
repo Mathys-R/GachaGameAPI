@@ -197,5 +197,5 @@ volumes:
   mongo-player:
   mongo-monsters:
   mongo-summon:
-  frontend:
+  spring-app:
 
