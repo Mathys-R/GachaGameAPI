@@ -1,10 +1,10 @@
 package com.imt.GachaGameAPI.player.controller;
 
-import com.imt.GachaGameAPI.monsters.model.Monsters;
 import com.imt.GachaGameAPI.player.dto.PlayerJsonDto;
 import com.imt.GachaGameAPI.player.model.Player;
 import com.imt.GachaGameAPI.player.service.PlayerService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -16,19 +16,28 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import org.springframework.web.bind.annotation.CrossOrigin;
+// import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
+
+import org.springframework.web.bind.annotation.RequestMethod;
 
 
 @RestController
 @RequestMapping("/player")
-@CrossOrigin(origins = "http://localhost:8080")  // Enable CORS for specific controller
+@SecurityRequirement(name = "bearerAuth") 
+// @CrossOrigin(origins = "http://localhost:8080")  // Enable CORS for specific controller
+// @CrossOrigin(origins = "http://localhost:8080", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
 public class PlayerController {
     
     private final PlayerService playerService;
 
     public PlayerController(PlayerService playerService) {
         this.playerService = playerService;
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+        public ResponseEntity<?> handleOptions() {
+            return ResponseEntity.ok().build();
     }
     
     @PostMapping("/save")
@@ -95,5 +104,11 @@ public class PlayerController {
     public ResponseEntity<String> removeMonster(@PathVariable int id, @PathVariable String monsterId) {
         boolean success = playerService.removeMonster(id, monsterId);
         return success ? ResponseEntity.ok("Monster removed!") : ResponseEntity.notFound().build();
+    }
+
+    @DeleteMapping("/allPlayers")
+    public ResponseEntity<String> removePlayers() {
+        boolean success = playerService.removeAllPlayers();
+        return success ? ResponseEntity.ok("All Players removed!") : ResponseEntity.notFound().build();
     }
 }

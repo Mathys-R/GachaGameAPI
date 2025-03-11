@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
@@ -18,6 +18,7 @@
             <button id="btnAddMonster">Ajouter Monstre</button>
             <input type="text" id="monsterId" placeholder="ID du monstre">
             <button id="btnRemoveMonster">Supprimer Monstre</button>
+            <button id="btnRemoveAllPlayers">Supprimer tous les joueurs</button>
             <div class="response" id="playerResponse">Waiting for response...</div>
         </div>
     
@@ -26,8 +27,6 @@
             <button id="btnGetMonsters">Récupérer tous les monstres</button>
             <button id="btnGetMonsterById">Rechercher un monstre par ID</button>
             <input type="text" id="monsterIdInput" placeholder="ID du monstre">
-            <!-- <button id="btnCreateMonster">Créer un monstre</button>
-            <button id="btnUpdateMonster">Mettre à jour un monstre</button> -->
             <button id="btnDeleteMonster">Supprimer un monstre</button>
             <div class="response" id="monstersResponse">Waiting for response...</div>
         </div>
@@ -79,19 +78,6 @@
             if (id) await fetchMonstersAPI(`/${id}`);
         });
     
-        // document.getElementById("btnCreateMonster").addEventListener("click", async () => {
-        //     const monster = { name: "Nouveau Monstre", level: 1 };
-        //     await fetchMonstersAPI("/", "POST", monster);
-        // });
-    
-        // document.getElementById("btnUpdateMonster").addEventListener("click", async () => {
-        //     const id = document.getElementById("monsterIdInput").value;
-        //     if (id) {
-        //         const monster = { name: "Monstre Modifié", level: 5 };
-        //         await fetchMonstersAPI(`/${id}`, "PUT", monster);
-        //     }
-        // });
-    
         document.getElementById("btnDeleteMonster").addEventListener("click", async () => {
             const id = document.getElementById("monsterIdInput").value;
             if (id) {
@@ -133,7 +119,11 @@
                 await fetchPlayerAPI(`/${playerId}/monsters/${monsterId}`, "DELETE");
             }
         });
+        
+        document.getElementById("btnRemoveAllPlayers").addEventListener("click", async () => {
+            await fetchPlayerAPI(`/allPlayers`, "DELETE");
+        });
     </script>
     
 </body>
-</html>
+</html> -->
