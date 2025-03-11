@@ -16,21 +16,11 @@ import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final RestTemplate restTemplate = new RestTemplate();
-    private final List<String> publicPaths = Arrays.asList(
-            "/auth/register",
-            "/auth/re-authenticate",
-            "/auth/validate",
-            "/v3/api-docs",
-            "/swagger-ui",
-            "/swagger-ui.html"
-    );
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
@@ -43,7 +33,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         String path = request.getRequestURI();
 
-        if (isPublicPath(path, request.getContextPath())) {
+        if (path.startsWith(request.getContextPath() + "/auth/register") ||
+                path.startsWith(request.getContextPath() + "/auth/re-authenticate") ||
+                path.startsWith(request.getContextPath() + "/auth/validate") ||
+                path.startsWith(request.getContextPath() + "/v3/api-docs/**") ||
+                path.startsWith(request.getContextPath() + "/swagger-ui/**") ||
+                path.startsWith(request.getContextPath() + "/swagger-ui.html")) {
             filterChain.doFilter(request, response);
             return;
         }
@@ -56,17 +51,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         String token = authHeader.substring(7);
-        validateTokenAndAuthenticate(token, response);
 
-        filterChain.doFilter(request, response);
-    }
-
-    private boolean isPublicPath(String path, String contextPath) {
-        return publicPaths.stream()
-                .anyMatch(publicPath -> path.startsWith(contextPath + publicPath));
-    }
-
-    private void validateTokenAndAuthenticate(String token, HttpServletResponse response) throws IOException {
         try {
             ResponseEntity<String> authResponse =
                     restTemplate.getForEntity("http://api-auth:8081/auth/validate/" + token, String.class);
@@ -79,10 +64,14 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             } else {
                 response.setStatus(HttpStatus.UNAUTHORIZED.value());
                 response.getWriter().write("Token invalide");
+                return;
             }
         } catch (HttpClientErrorException e) {
             response.setStatus(e.getStatusCode().value());
             response.getWriter().write(e.getStatusText());
+            return;
         }
+
+        filterChain.doFilter(request, response);
     }
 }
