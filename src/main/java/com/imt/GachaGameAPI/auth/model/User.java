@@ -5,15 +5,17 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
-import java.security.*;
-import java.nio.charset.StandardCharsets;
 
 
 @Getter
 @Document(collection = "users")
 public class User {
+    private LocalDateTime creationDate;
     @Setter
     @Id
     private String id;
@@ -21,8 +23,8 @@ public class User {
     private String username;
     @Setter
     private String password;
+    @Setter
     private String token;
-    private LocalDateTime creationDate;
     @Setter
     private LocalDateTime lastLoginDate;
 
@@ -33,6 +35,9 @@ public class User {
         this.creationDate = date;
         this.lastLoginDate = date;
         this.token = generateToken();
+    }
+
+    public User() {
     }
 
     private String generateToken() {

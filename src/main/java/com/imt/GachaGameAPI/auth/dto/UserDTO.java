@@ -7,8 +7,16 @@ import lombok.Setter;
 @Setter
 public class UserDTO {
     private String token;
+    private String testUser;
 
     public UserDTO(String token) {
         this.token = token;
+    }
+
+    public UserDTO() {
+    }
+
+    public void setUsername(String testUser) {
+        this.testUser = testUser;
     }
 }
