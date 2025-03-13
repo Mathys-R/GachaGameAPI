@@ -36,9 +36,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (path.startsWith(request.getContextPath() + "/auth/register") ||
                 path.startsWith(request.getContextPath() + "/auth/re-authenticate") ||
                 path.startsWith(request.getContextPath() + "/auth/validate") ||
-                path.startsWith(request.getContextPath() + "/v3/api-docs/**") ||
-                path.startsWith(request.getContextPath() + "/swagger-ui/**") ||
-                path.startsWith(request.getContextPath() + "/swagger-ui.html")) {
+                (path.contains("/v3/api-docs") || path.contains("/swagger-ui"))
+            ) {
             filterChain.doFilter(request, response);
             return;
         }
