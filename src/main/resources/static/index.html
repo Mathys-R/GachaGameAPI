@@ -4,53 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gacha Game API Tester</title>
-    <style>
-        .container {
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-            font-family: Arial, sans-serif;
-        }
-        .endpoint {
-            border: 1px solid #ddd;
-            margin: 10px 0;
-            padding: 15px;
-            border-radius: 5px;
-            background-color: #fafafa;
-        }
-        .response {
-            background-color: #f5f5f5;
-            padding: 10px;
-            margin-top: 10px;
-            white-space: pre-wrap;
-            border-radius: 5px;
-        }
-        button {
-            cursor: pointer;
-            padding: 8px 12px;
-            border: none;
-            background-color: #007bff;
-            color: white;
-            border-radius: 5px;
-            font-size: 14px;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        input {
-            display: block;
-            margin-top: 5px;
-            padding: 8px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        .auth-container {
-            background: #eef;
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-        }
-    </style>
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
@@ -68,6 +22,8 @@
         
         <button onclick="register()">Register</button>
         
+        <button onclick="login()">Login</button>
+        
         <div class="response" id="authResponse">Not authenticated</div>
     </div>
 
@@ -75,16 +31,22 @@
     <div class="endpoint">
         <h2>Player API</h2>
         <button id="btnSavePlayer">Save Player</button>
-        <textarea id="playerData" placeholder='{"id": 1, "level": 1, "experience": 0, "inventory": []}'>{"id": 1, "level": 0, "experience": 0, "inventory": []}</textarea>
+        <textarea id="playerData" placeholder='{"id": 1, "level": 0, "experience": 0, "inventory": []}'>{"id": 1, "level": 0, "experience": 0, "inventory": []}</textarea>
         <div class="response" id="savePlayerResponse">Waiting for response...</div>
         <button id="btnGetPlayers">Get All Players</button>
-        <button id="btnGetPlayerById">Find Player by ID</button>
-        <input type="number" id="playerId" placeholder="Player ID">
-        <button id="btnAddXP">Add XP</button>
-        <input type="number" id="xpAmount" placeholder="XP Amount">
-        <button id="btnAddMonster">Add Monster</button>
-        <input type="text" id="monsterId" placeholder="Monster ID">
-        <button id="btnRemoveMonster">Remove Monster</button>
+        <div class="input-group">
+            <input type="number" id="playerId" placeholder="Player ID">
+            <button id="btnGetPlayerById">Find Player</button>
+        </div>
+        <div class="input-group">
+            <input type="number" id="xpAmount" placeholder="XP Amount">
+            <button id="btnAddXP">Add XP</button>
+        </div>
+        <div class="input-group">
+            <input type="text" id="monsterId" placeholder="Monster ID">
+            <button id="btnAddMonster">Add Monster</button>
+            <button id="btnRemoveMonster">Remove Monster</button>
+        </div>
         <div class="response" id="playerResponse">Waiting for response...</div>
     </div>
 
@@ -92,9 +54,11 @@
     <div class="endpoint">
         <h2>Monsters API</h2>
         <button id="btnGetMonsters">Get All Monsters</button>
-        <button id="btnGetMonsterById">Find Monster by ID</button>
-        <input type="text" id="monsterIdInput" placeholder="Monster ID">
-        <button id="btnDeleteMonster">Delete Monster</button>
+        <div class="input-group">
+            <input type="text" id="monsterIdInput" placeholder="Monster ID">
+            <button id="btnGetMonsterById">Find Monster</button>
+            <button id="btnDeleteMonster">Delete Monster</button>
+        </div>
         <div class="response" id="monstersResponse">Waiting for response...</div>
     </div>
 </div>
@@ -170,6 +134,29 @@
         }
     }
 
+    async function login() {
+        const username = document.getElementById("authUsername").value;
+        const password = document.getElementById("authPassword").value;
+
+        const response = await fetch(`${API_URL_AUTH}/re-authenticate`, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ username, password }),
+        });
+
+        if (!response.ok) {
+            document.getElementById("authResponse").innerText = "Login failed!";
+            return;
+        }
+
+        const data = await response.json();
+        if (data.token) {
+            setToken(data.token); // Store token after successful re-authenticate
+        } else {
+            document.getElementById("authResponse").innerText = "No token received!";
+        }
+    }
+
     // MONSTERS API
     document.getElementById("btnGetMonsters").addEventListener("click", async () => {
         await fetchAPI(API_URL_MONSTERS, "GET", null, "monstersResponse");
@@ -201,7 +188,7 @@
         const id = document.getElementById("playerId").value;
         const xp = document.getElementById("xpAmount").value;
         if (id && xp) {
-            await fetchAPI(`${API_URL_PLAYER}/${id}/xp`, "POST", { amount: parseInt(xp) }, "playerResponse");
+            await fetchAPI(`${API_URL_PLAYER}/${id}/add-xp/${xp}`, "POST", null, "playerResponse");
         }
     });
 
@@ -223,7 +210,7 @@
 
     document.getElementById("btnSavePlayer").addEventListener("click", async () => {
         const playerData = document.getElementById("playerData").value;
-        
+
         try {
             const parsedData = JSON.parse(playerData);
             await fetchAPI(`${API_URL_PLAYER}/save`, "POST", parsedData, "savePlayerResponse");
@@ -231,7 +218,6 @@
             document.getElementById("savePlayerResponse").innerText = "Invalid JSON format!";
         }
     });
-
 </script>
 </body>
 </html>

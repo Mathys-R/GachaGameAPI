@@ -8,6 +8,7 @@ import com.imt.GachaGameAPI.player.service.PlayerService;
 import jakarta.validation.Valid;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -42,7 +43,7 @@ public class PlayerController {
     }
     
     @PostMapping("/save")
-    public ResponseEntity<String> createPlayer(@Valid @RequestBody PlayerJsonDto player) {
+    public ResponseEntity<Map<String, String>> createPlayer(@Valid @RequestBody PlayerJsonDto player) {
         playerService.savePlayer(
             new Player(
                 player.getId(), 
@@ -50,7 +51,7 @@ public class PlayerController {
                 player.getExperience(), 
                 player.getInventory())
         );
-        return ResponseEntity.ok("saved !");
+        return ResponseEntity.ok(Map.of("message", "Player saved!"));
     }
 
     @GetMapping("/allPlayers")
@@ -83,26 +84,32 @@ public class PlayerController {
     }
 
     @PostMapping("/{id}/add-xp/{xp}")
-    public ResponseEntity<String> addExperience(@PathVariable int id, @PathVariable int xp) {
+    public ResponseEntity<Map<String, String>> addExperience(@PathVariable int id, @PathVariable int xp) {
         boolean leveledUp = playerService.addExperience(id, xp);
-        return ResponseEntity.ok(leveledUp ? "Level up!" : "XP added");
+        return ResponseEntity.ok(Map.of("message", leveledUp ? "Level up!" : "XP added"));
     }
 
     @PostMapping("/{id}/add-monster/{monsterId}")
-    public ResponseEntity<String> addMonster(@PathVariable int id, @PathVariable String monsterId) {
+    public ResponseEntity<Map<String, String>> addMonster(@PathVariable int id, @PathVariable String monsterId) {
         boolean success = playerService.addMonster(id, monsterId);
-        return success ? ResponseEntity.ok("Monster added!") : ResponseEntity.badRequest().body("Inventory full");
+        return success 
+            ? ResponseEntity.ok(Map.of("message", "Monster added!")) 
+            : ResponseEntity.badRequest().body(Map.of("error", "Inventory full"));
     }
 
     @DeleteMapping("/{id}/remove-monster/{monsterId}")
-    public ResponseEntity<String> removeMonster(@PathVariable int id, @PathVariable String monsterId) {
+    public ResponseEntity<Map<String, String>> removeMonster(@PathVariable int id, @PathVariable String monsterId) {
         boolean success = playerService.removeMonster(id, monsterId);
-        return success ? ResponseEntity.ok("Monster removed!") : ResponseEntity.notFound().build();
+        return success 
+            ? ResponseEntity.ok(Map.of("message", "Monster removed!")) 
+            : ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/allPlayers")
-    public ResponseEntity<String> removePlayers() {
+    public ResponseEntity<Map<String, String>> removePlayers() {
         boolean success = playerService.removeAllPlayers();
-        return success ? ResponseEntity.ok("All Players removed!") : ResponseEntity.notFound().build();
+        return success 
+            ? ResponseEntity.ok(Map.of("message", "All Players removed!")) 
+            : ResponseEntity.notFound().build();
     }
 }

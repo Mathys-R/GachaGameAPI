@@ -60,7 +60,8 @@ public class User {
     public String reAuthenticate(String username, String password) {
         if (this.username.equals(username) && this.password.equals(password)) {
             setLastLoginDate(LocalDateTime.now());
-            return "Authentification réussie & Token de nouveau valide. Veuillez réessayer.";
+            // return "Authentification réussie & Token de nouveau valide. Veuillez réessayer.";
+            return this.token;
         } else {
             throw new IllegalArgumentException("Nom d'utilisateur ou mot de passe incorrect");
         }

@@ -1,0 +1,101 @@
+/* Dark Theme Styling */
+body {
+    background-color: #121212;
+    color: #ffffff;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    max-width: 800px;
+    margin: 40px auto;
+    padding: 20px;
+    background-color: #1e1e1e;
+    border-radius: 8px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+h1, h2 {
+    color: #ffffff;
+    text-align: center;
+}
+
+.endpoint {
+    border: 1px solid #333;
+    margin: 15px 0;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #2a2a2a;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.response {
+    background-color: #1c1c1c;
+    padding: 12px;
+    margin-top: 10px;
+    white-space: pre-wrap;
+    border-radius: 5px;
+    border: 1px solid #444;
+    color: #d4d4d4;
+    font-family: monospace;
+}
+
+button {
+    cursor: pointer;
+    padding: 10px 15px;
+    border: none;
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background 0.3s ease-in-out;
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+input, textarea  {
+    display: block;
+    margin-top: 8px;
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    background-color: #333;
+    border: 1px solid #555;
+    color: white;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+input::placeholder {
+    color: #888;
+}
+
+.auth-container {
+    background: #222;
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+label {
+    font-weight: bold;
+    display: block;
+    margin-top: 10px;
+    color: #ddd;
+}
+
+.input-group {
+    display: flex;
+    /* align-items: center; */
+    gap: 10px; /* Espacement entre l'input et le bouton */
+    /* margin-top: 10px;
+    width: 100%; */
+}
+

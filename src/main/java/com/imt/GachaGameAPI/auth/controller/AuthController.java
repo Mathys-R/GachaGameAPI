@@ -94,8 +94,12 @@ public class AuthController {
         }
 
         try {
-            Optional<String> result = userService.reAuthenticateUser(username, password);
-            return result.<ResponseEntity<?>>map(s -> ResponseEntity.ok(Map.of("Succès", s))).orElseGet(() -> ResponseEntity.status(404)
+            // Optional<String> result = userService.reAuthenticateUser(username, password);
+            Optional<String> token = userService.reAuthenticateUser(username, password);
+
+            // return result.<ResponseEntity<?>>map(s -> ResponseEntity.ok(Map.of("Succès", s))).orElseGet(() -> ResponseEntity.status(404)
+            return token.map(t -> ResponseEntity.ok(Map.of("token", t))) // Renvoie directement le token
+                .orElseGet(() -> ResponseEntity.status(404)
                     .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas")));
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(401)

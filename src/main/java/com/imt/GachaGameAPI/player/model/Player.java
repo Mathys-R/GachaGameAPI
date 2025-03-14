@@ -53,11 +53,6 @@ public class Player {
     
         return leveledUp;
     }
-    
-    private void levelUp() {
-        this.experience = 0;
-        this.level++;
-    }
 
     public boolean addMonster(String monsterId) {
         if (inventory.size() < 10 + level) { // Taille max = 10 + level
