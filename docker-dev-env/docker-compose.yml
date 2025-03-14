@@ -1,9 +1,17 @@
 services:
-  spring-app:
-    build: ../
-    image: spring-app:latest
-    ports:
-      - "8080:8080"
+  frontend:
+     image: nginx
+     container_name: frontend
+     ports:
+       - "8080:80"
+     volumes:
+       - ../src/main/resources/static:/usr/share/nginx/html
+     depends_on:
+       - api-auth
+       - api-player
+       - api-monsters
+       - api-summon
+ 
 
   # MongoDB service for API Authentication
   mongo-auth:
@@ -180,5 +188,5 @@ volumes:
   mongo-player:
   mongo-monsters:
   mongo-summon:
-  spring-app:
+  frontend:
 

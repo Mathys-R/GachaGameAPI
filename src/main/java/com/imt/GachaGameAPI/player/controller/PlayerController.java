@@ -4,7 +4,7 @@ import com.imt.GachaGameAPI.player.dto.PlayerJsonDto;
 import com.imt.GachaGameAPI.player.model.Player;
 import com.imt.GachaGameAPI.player.service.PlayerService;
 
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+// import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.CrossOrigin;
 // import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
@@ -24,9 +25,9 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController
 @RequestMapping("/player")
-@SecurityRequirement(name = "bearerAuth") 
-// @CrossOrigin(origins = "http://localhost:8080")  // Enable CORS for specific controller
-// @CrossOrigin(origins = "http://localhost:8080", allowedHeaders = "*", methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.DELETE, RequestMethod.PUT})
+// @SecurityRequirement(name = "bearerAuth") 
+@CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true") 
+// @CrossOrigin(origins = "*", allowCredentials = "true")
 public class PlayerController {
     
     private final PlayerService playerService;
@@ -66,13 +67,6 @@ public class PlayerController {
 
         return ResponseEntity.ok(players);
     }
-
-    // @GetMapping("/allPlayers")
-    // public ResponseEntity<List<Player>> getAllPlayers() {
-    //     // return ResponseEntity.ok("test");
-    //     List<Player> players = playerService.getAllPlayers();
-    //     return ResponseEntity.ok(players);
-    // }
 
     @GetMapping("/{id}")
     public ResponseEntity<List<PlayerJsonDto>> getPlayers(@PathVariable int id) {

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/summon")
+@CrossOrigin(origins = "http://localhost:8080")  // Enable CORS
+// @CrossOrigin(origins = "*", allowCredentials = "true")
 public class SummonController {
 
     @Autowired

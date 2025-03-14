@@ -43,13 +43,17 @@ public class Player {
 
     public boolean addExperience(int xp) {
         this.experience += xp;
-        if (this.experience >= getXpThreshold()) {
-            levelUp();
-            return true;
+        boolean leveledUp = false;
+    
+        while (this.experience >= getXpThreshold() && this.level < 50) {
+            this.experience -= getXpThreshold(); // Retire l'XP nécessaire pour le level-up
+            this.level++;
+            leveledUp = true;
         }
-        return false;
+    
+        return leveledUp;
     }
-
+    
     private void levelUp() {
         this.experience = 0;
         this.level++;
