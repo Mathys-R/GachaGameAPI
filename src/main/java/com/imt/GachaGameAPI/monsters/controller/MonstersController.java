@@ -39,7 +39,7 @@ public class MonstersController {
     // }
     // Faire un map
 
-    @PostMapping("/")
+    @PostMapping("/save")
     public ResponseEntity<Monsters> createMonster(@RequestBody Monsters monster) {
         try {
             Monsters createdMonster = monstersService.createMonster(monster);

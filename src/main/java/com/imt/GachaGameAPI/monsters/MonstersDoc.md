@@ -56,7 +56,7 @@ Cette documentation décrit les différentes requêtes pouvant être effectuées
 ---
 
 ### 2️⃣ Créer un monstre
-**URL:** `http://localhost:8081/monsters/`
+**URL:** `http://localhost:8081/monsters/save`
 **Méthode:** `POST`
 **Type de Body:** `application/json`
 

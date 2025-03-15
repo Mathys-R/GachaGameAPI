@@ -7,7 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/summon")
+@RequestMapping("/summon")
 @CrossOrigin(origins = "http://localhost:8080")  // Enable CORS
 // @CrossOrigin(origins = "*", allowCredentials = "true")
 public class SummonController {

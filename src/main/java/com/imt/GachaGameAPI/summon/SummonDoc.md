@@ -8,7 +8,7 @@ Cette documentation décrit les différentes requêtes pouvant être effectuées
 ## 🚀 Endpoints disponibles
 
 ### 1️⃣ Invoquer un monstre aléatoire
-**URL:** `http://localhost:8081/api/summon/{userId}`
+**URL:** `http://localhost:8084/summon/{userId}`
 **Méthode:** `POST`
 
 #### 🔹 Description
