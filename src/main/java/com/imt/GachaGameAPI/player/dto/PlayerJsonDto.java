@@ -13,12 +13,12 @@ import lombok.Setter;
 @NoArgsConstructor
 public class PlayerJsonDto {
 
-    @NotNull private int id;
+    @NotNull private String id;
     @NotNull @Min(0) private int level;
     @NotNull @Min(0) private int experience;
     private List<String> inventory; // Liste des IDs des monstres
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
@@ -44,7 +44,7 @@ public class PlayerJsonDto {
             '}';
     }
 
-    public PlayerJsonDto(int id, int level, int experience, List<String> inventory) {
+    public PlayerJsonDto(String id, int level, int experience, List<String> inventory) {
         this.id = id;
         this.level = level;
         this.experience = experience;

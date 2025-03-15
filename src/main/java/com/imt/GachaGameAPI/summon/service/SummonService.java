@@ -28,7 +28,7 @@ public class SummonService {
     @Autowired
     private PlayerService playerService;
 
-    public SummonDto summonMonster(int userId) {
+    public SummonDto summonMonster(String userId) {
         Map<Integer,List<Monsters>> monsters = monstersService.getMonstersRarity();
         Monsters summonedMonster = getRandomMonster(monsters);
 

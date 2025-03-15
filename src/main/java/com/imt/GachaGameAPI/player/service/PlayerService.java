@@ -23,11 +23,11 @@ public class PlayerService {
         return playerDao.findAll();
     }
     
-    public List<Player> findPlayerById(int id) {
+    public List<Player> findPlayerById(String id) {
         return playerDao.findOneById(id);
     }
 
-    public boolean addExperience(int playerId, int xp) {
+    public boolean addExperience(String playerId, int xp) {
         List<Player> players = findPlayerById(playerId);
     
         if (!players.isEmpty()) { // Vérifie si la liste contient au moins un élément
@@ -40,7 +40,7 @@ public class PlayerService {
         return false; // Retourne false si aucun joueur n'est trouvé
     }
 
-    public boolean addMonster(int playerId, String monsterId) {
+    public boolean addMonster(String playerId, String monsterId) {
         List<Player> players = findPlayerById(playerId);
     
         if (!players.isEmpty()) { // Vérifie si la liste contient au moins un joueur
@@ -53,7 +53,7 @@ public class PlayerService {
         return false; // Retourne false si aucun joueur n'est trouvé ou si l'ajout échoue
     }
     
-    public boolean removeMonster(int playerId, String monsterId) {
+    public boolean removeMonster(String playerId, String monsterId) {
         List<Player> players = findPlayerById(playerId);
     
         if (!players.isEmpty()) { // Vérifie si la liste contient au moins un joueur

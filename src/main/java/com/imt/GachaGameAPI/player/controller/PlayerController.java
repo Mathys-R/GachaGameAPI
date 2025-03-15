@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.bind.annotation.CrossOrigin;
-// import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -70,7 +69,7 @@ public class PlayerController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<List<PlayerJsonDto>> getPlayers(@PathVariable int id) {
+    public ResponseEntity<List<PlayerJsonDto>> getPlayers(@PathVariable String id) {
         List<PlayerJsonDto> playerById = playerService.findPlayerById(id)
             .stream()
             .map(player -> new PlayerJsonDto(
@@ -83,14 +82,28 @@ public class PlayerController {
         return ResponseEntity.ok(playerById);
     }
 
+    
+    @GetMapping("{id}/getMonsters")
+    public ResponseEntity<List<String>> getMonsters(@PathVariable String id) {
+        List<Player> players = playerService.findPlayerById(id);
+        
+        if (!players.isEmpty()) {
+            // Assuming a player is found, we just return their inventory (list of monster IDs)
+            Player player = players.get(0);
+            return ResponseEntity.ok(player.getInventory());
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+
     @PostMapping("/{id}/add-xp/{xp}")
-    public ResponseEntity<Map<String, String>> addExperience(@PathVariable int id, @PathVariable int xp) {
+    public ResponseEntity<Map<String, String>> addExperience(@PathVariable String id, @PathVariable int xp) {
         boolean leveledUp = playerService.addExperience(id, xp);
         return ResponseEntity.ok(Map.of("message", leveledUp ? "Level up!" : "XP added"));
     }
 
     @PostMapping("/{id}/add-monster/{monsterId}")
-    public ResponseEntity<Map<String, String>> addMonster(@PathVariable int id, @PathVariable String monsterId) {
+    public ResponseEntity<Map<String, String>> addMonster(@PathVariable String id, @PathVariable String monsterId) {
         boolean success = playerService.addMonster(id, monsterId);
         return success 
             ? ResponseEntity.ok(Map.of("message", "Monster added!")) 
@@ -98,7 +111,7 @@ public class PlayerController {
     }
 
     @DeleteMapping("/{id}/remove-monster/{monsterId}")
-    public ResponseEntity<Map<String, String>> removeMonster(@PathVariable int id, @PathVariable String monsterId) {
+    public ResponseEntity<Map<String, String>> removeMonster(@PathVariable String id, @PathVariable String monsterId) {
         boolean success = playerService.removeMonster(id, monsterId);
         return success 
             ? ResponseEntity.ok(Map.of("message", "Monster removed!")) 

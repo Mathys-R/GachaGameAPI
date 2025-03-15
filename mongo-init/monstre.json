@@ -15,6 +15,23 @@
           "niveauAmeliorationMax": 5
         }
       ]
+    },
+    {
+      "typeElementaire": "eau",
+      "hp": 750,
+      "atk": 50,
+      "def": 50,
+      "vit": 80,
+      "competences": [
+        {
+          "nom": "Jet d'eau",
+          "degatsDeBase": 45,
+          "ratioDegats": 1.2,
+          "cooldown": 2,
+          "niveauAmelioration": 0,
+          "niveauAmeliorationMax": 5
+        }
+      ]
     }
   ]
   

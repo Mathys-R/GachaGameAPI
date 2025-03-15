@@ -24,38 +24,27 @@
         
         <button onclick="login()">Login</button>
         
-        <!-- <button onclick="logout()">Logout</button> -->
-        
         <div class="response" id="authResponse">Not authenticated</div>
     </div>
 
     <!-- PLAYER API -->
     <div class="endpoint">
         <h2>Player API</h2>
-        <label>Player Id:</label>        
-        <div class="response" id="playerIdResponse">Waiting for response...</div>
-        <!-- <button id="btnSavePlayer">Save Player</button>
+        <button id="btnSavePlayer">Save Player</button>
         <textarea id="playerData" placeholder='{"id": 1, "level": 0, "experience": 0, "inventory": []}'>{"id": 1, "level": 0, "experience": 0, "inventory": []}</textarea>
         <div class="response" id="savePlayerResponse">Waiting for response...</div>
         <button id="btnGetPlayers">Get All Players</button>
         <div class="input-group">
             <input type="number" id="playerId" placeholder="Player ID">
             <button id="btnGetPlayerById">Find Player</button>
-        </div> -->
-        
-        <button id="btnGetPlayerInfo">Get Info</button>
-        <div class="response" id="playerInfoResponse">Waiting for response...</div>
-        
-        <!-- <button id="btnGetLevelXP">Get Level and XP</button>
-        <div class="response" id="playerXPResponse">Waiting for response...</div> -->
-
+        </div>
         <div class="input-group">
             <input type="number" id="xpAmount" placeholder="XP Amount">
             <button id="btnAddXP">Add XP</button>
         </div>
         <div class="input-group">
             <input type="text" id="monsterId" placeholder="Monster ID">
-            <!-- <button id="btnAddMonster">Add Monster</button> -->
+            <button id="btnAddMonster">Add Monster</button>
             <button id="btnRemoveMonster">Remove Monster</button>
         </div>
         <div class="response" id="playerResponse">Waiting for response...</div>
@@ -64,7 +53,7 @@
     <!-- MONSTERS API -->
     <div class="endpoint">
         <h2>Monsters API</h2>
-        <!-- <button id="btnSaveMonster">Save Monster</button>
+        <button id="btnSaveMonster">Save Monster</button>
         <textarea id="monsterData" placeholder=''>
 {
     "typeElementaire": "Terre",
@@ -84,14 +73,14 @@
     ]
 }
         </textarea>
-        <div class="response" id="saveMonsterResponse">Waiting for response...</div> -->
+        <div class="response" id="saveMonsterResponse">Waiting for response...</div>
 
-        <button id="btnGetMonsters">Get the Info about the Monsters in the inventory</button>
-        <!-- <div class="input-group">
+        <button id="btnGetMonsters">Get All Monsters</button>
+        <div class="input-group">
             <input type="text" id="monsterIdInput" placeholder="Monster ID">
             <button id="btnGetMonsterById">Find Monster</button>
             <button id="btnDeleteMonster">Delete Monster</button>
-        </div> -->
+        </div>
         <div class="response" id="monstersResponse">Waiting for response...</div>
     </div>
 
@@ -99,7 +88,10 @@
     <div class="endpoint">
         <h2>Summon API</h2>
        
-        <button id="btnSummonMonster">Summon a Monster</button>
+        <div class="input-group">
+            <input type="text" id="summonPlayerIdInput" placeholder="Player ID">
+            <button id="btnSummonMonster">Summon a Monster</button>
+        </div>
         
         <div class="response" id="summonResponse">Waiting for response...</div>
     </div>
@@ -118,23 +110,11 @@
 
     function setToken(token) {
         localStorage.setItem("token", token);
-
         document.getElementById("authResponse").innerText = "Authenticated!";
-    }
-
-    function getId() {
-        return localStorage.getItem("id") || "";
-    }
-
-    function setId(id) {
-        localStorage.setItem("id", id);
-
-        document.getElementById("playerIdResponse").innerText = id;
     }
 
     function logout() {
         localStorage.removeItem("token");
-        localStorage.removeItem("id");
         document.getElementById("authResponse").innerText = "Logged out!";
     }
 
@@ -169,44 +149,22 @@
         const username = document.getElementById("authUsername").value;
         const password = document.getElementById("authPassword").value;
 
-        const responseAuth = await fetch(`${API_URL_AUTH}/register`, {
+        const response = await fetch(`${API_URL_AUTH}/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ username, password }),
         });
 
-        if (!responseAuth.ok) {
+        if (!response.ok) {
             document.getElementById("authResponse").innerText = "Registration failed!";
             return;
         }
 
-        const data = await responseAuth.json();
+        const data = await response.json();
         if (data.token) {
-            setToken(data.token); 
+            setToken(data.token); // Store token after successful registration
         } else {
             document.getElementById("authResponse").innerText = "No token received!";
-            return;
-        }
-
-        if (data.id) {
-            setId(data.id);
-        } else {
-            document.getElementById("authResponse").innerText = "No ID received!";
-            return;
-        }
-
-        // console.log("Saving player with ID:", getId());
-
-        const responsePlayer = await fetch(`${API_URL_PLAYER}/save`, {
-            method: "POST",
-            headers: { "Content-Type": "application/json" ,
-                    'Authorization': `Bearer ${getToken()}`},
-            body: JSON.stringify({ id: getId() }),
-        });
-
-        if (!responsePlayer.ok) {
-            document.getElementById("playerIdResponse").innerText = "Id registration for player failed!";
-            return;
         }
     }
 
@@ -231,28 +189,24 @@
         } else {
             document.getElementById("authResponse").innerText = "No token received!";
         }
-        
-        if (data.id) {
-            setId(data.id);
-        } else {
-            document.getElementById("authResponse").innerText = "No ID received!";
-            return;
-        }
     }
 
     // PLAYER API
+    document.getElementById("btnGetPlayers").addEventListener("click", async () => {
+        await fetchAPI(`${API_URL_PLAYER}/allPlayers`, "GET", null, "playerResponse");
+    });
 
-    document.getElementById("btnGetPlayerInfo").addEventListener("click", async () => {
-        const id = getId();
+    document.getElementById("btnGetPlayerById").addEventListener("click", async () => {
+        const id = document.getElementById("playerId").value;
         if (id) {
-            await fetchAPI(`${API_URL_PLAYER}/${id}`, "GET", null, "playerInfoResponse");
+            await fetchAPI(`${API_URL_PLAYER}/${id}`, "GET", null, "playerResponse");
         } else {
-            document.getElementById("playerInfoResponse").innerText = `Error : playerId incorrect`;
+            document.getElementById("playerResponse").innerText = `Error : playerId missing`;
         }
     });
 
     document.getElementById("btnAddXP").addEventListener("click", async () => {
-        const id = getId();
+        const id = document.getElementById("playerId").value;
         const xp = document.getElementById("xpAmount").value;
         if (id && xp) {
             await fetchAPI(`${API_URL_PLAYER}/${id}/add-xp/${xp}`, "POST", null, "playerResponse");
@@ -261,8 +215,18 @@
         }
     });
 
+    document.getElementById("btnAddMonster").addEventListener("click", async () => {
+        const playerId = document.getElementById("playerId").value;
+        const monsterId = document.getElementById("monsterId").value;
+        if (playerId && monsterId) {
+            await fetchAPI(`${API_URL_PLAYER}/${playerId}/add-monster/${monsterId}`, "POST", null, "playerResponse");
+        } else {
+            document.getElementById("playerResponse").innerText = `Error : playerId and/or monsterId missing`;
+        }
+    });
+
     document.getElementById("btnRemoveMonster").addEventListener("click", async () => {
-        const playerId = getId();
+        const playerId = document.getElementById("playerId").value;
         const monsterId = document.getElementById("monsterId").value;
         if (playerId && monsterId) {
             await fetchAPI(`${API_URL_PLAYER}/${playerId}/remove-monster/${monsterId}`, "DELETE", null, "playerResponse");
@@ -271,31 +235,56 @@
         }
     });
 
+    document.getElementById("btnSavePlayer").addEventListener("click", async () => {
+        const playerData = document.getElementById("playerData").value;
+
+        try {
+            const parsedData = JSON.parse(playerData);
+            await fetchAPI(`${API_URL_PLAYER}/save`, "POST", parsedData, "savePlayerResponse");
+        } catch (error) {
+            document.getElementById("savePlayerResponse").innerText = "Invalid JSON format!";
+        }
+    });
+    
+
     // MONSTERS API
     document.getElementById("btnGetMonsters").addEventListener("click", async () => {
-    const playerId = getId(); // Get the player ID from the local storage
-    if (playerId) {
-        // Fetch the player's inventory (list of monster IDs)
-        const inventoryResponse = await fetchAPI(`${API_URL_PLAYER}/${playerId}/getMonsters`, "GET", null, "monstersResponse");
+        await fetchAPI(`${API_URL_MONSTERS}/`, "GET", null, "monstersResponse");
+    });
 
-        // If inventory is retrieved, fetch the details for each monster
-        if (inventoryResponse && Array.isArray(inventoryResponse)) {
-            // Send the list of monster IDs in the body to the Monsters API
-            const monstersDetails = await fetchAPI(`${API_URL_MONSTERS}/list?ids=${inventoryResponse.join(',')}`, "GET", null, "monstersResponse");
+    document.getElementById("btnGetMonsterById").addEventListener("click", async () => {
+        const id = document.getElementById("monsterIdInput").value;
+        if (id) {
+            await fetchAPI(`${API_URL_MONSTERS}/${id}`, "GET", null, "monstersResponse");
         } else {
-            document.getElementById("monstersResponse").innerText = "Error: Unable to fetch inventory or no monsters found.";
+            document.getElementById("playerResponse").innerText = `Error : monsterId missing`;
         }
-    } else {
-        document.getElementById("monstersResponse").innerText = "Error: playerId missing";
-    }
-});
+    });
 
+    document.getElementById("btnDeleteMonster").addEventListener("click", async () => {
+        const id = document.getElementById("monsterIdInput").value;
+        if (id) {
+            await fetchAPI(`${API_URL_MONSTERS}/${id}`, "DELETE", null, "monstersResponse");
+        } else {
+            document.getElementById("playerResponse").innerText = `Error : monsterId missing`;
+        }
+    });
+    
+    document.getElementById("btnSaveMonster").addEventListener("click", async () => {
+        const monsterData = document.getElementById("monsterData").value;
 
+        try {
+            const parsedData = JSON.parse(monsterData);
+            await fetchAPI(`${API_URL_MONSTERS}/save`, "POST", parsedData, "saveMonsterResponse");
+        } catch (error) {
+            document.getElementById("saveMonsterResponse").innerText = "Invalid JSON format!";
+        }
+    });
 
     
     // SUMMON API
     document.getElementById("btnSummonMonster").addEventListener("click", async () => {
-        const id = getId();
+        const id = document.getElementById("summonPlayerIdInput").value;
         if (id) {
             await fetchAPI(`${API_URL_SUMMON}/${id}`, "POST", null, "summonResponse");
         } else {

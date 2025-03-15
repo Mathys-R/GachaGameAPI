@@ -48,4 +48,13 @@ public class MonstersService {
         }
         monsterDao.deleteById(id);
     }
+    
+    public List<Monsters> getMonstersByIds(List<String> ids) {
+        List<Monsters> monsters = monsterDao.findAllById(ids);
+        if (monsters.isEmpty()) {
+            throw new RuntimeException("Monsters not found for the given ids: " + ids);
+        }
+        return monsters;
+    }
+    
 }

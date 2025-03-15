@@ -5,6 +5,8 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import com.imt.GachaGameAPI.auth.dto.UserDTO;
+
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -57,11 +59,11 @@ public class User {
         return minutesElapsed < 60;
     }
 
-    public String reAuthenticate(String username, String password) {
+    public UserDTO reAuthenticate(String username, String password) {
         if (this.username.equals(username) && this.password.equals(password)) {
             setLastLoginDate(LocalDateTime.now());
             // return "Authentification réussie & Token de nouveau valide. Veuillez réessayer.";
-            return this.token;
+            return new UserDTO(this.id, this.token);
         } else {
             throw new IllegalArgumentException("Nom d'utilisateur ou mot de passe incorrect");
         }

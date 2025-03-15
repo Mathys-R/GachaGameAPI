@@ -45,6 +45,18 @@ public class AuthController {
                         .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas").toString()));
     }
 
+    @GetMapping("/getId/{username}")
+    public ResponseEntity<?> getId(@PathVariable String username) {
+        if (username.trim().isEmpty()) {
+            return ResponseEntity.status(400)
+                    .body(Map.of("Erreur", "Le nom d'utilisateur ne peut pas être vide"));
+        }
+        Optional<String> userInfo = userService.getIdByUsername(username);
+        return userInfo.map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.status(404)
+                        .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas").toString()));
+    }
+
     @DeleteMapping({"/delete/{username}", "/delete/"})
     public ResponseEntity<Map<String, String>> deleteUser(@PathVariable(required = false) String username) {
         if (username == null || username.trim().isEmpty()) {
@@ -95,12 +107,15 @@ public class AuthController {
 
         try {
             // Optional<String> result = userService.reAuthenticateUser(username, password);
-            Optional<String> token = userService.reAuthenticateUser(username, password);
+            // Optional<String> token = userService.reAuthenticateUser(username, password);
+            Optional<UserDTO> user = userService.reAuthenticateUser(username, password);
 
             // return result.<ResponseEntity<?>>map(s -> ResponseEntity.ok(Map.of("Succès", s))).orElseGet(() -> ResponseEntity.status(404)
-            return token.map(t -> ResponseEntity.ok(Map.of("token", t))) // Renvoie directement le token
-                .orElseGet(() -> ResponseEntity.status(404)
-                    .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas")));
+            // return token.map(t -> ResponseEntity.ok(Map.of("token", t))) // Renvoie directement le token
+            //     .orElseGet(() -> ResponseEntity.status(404)
+            //         .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas")));
+
+            return ResponseEntity.ok(user);
         } catch (IllegalArgumentException e) {
             return ResponseEntity.status(401)
                     .body(Map.of("Erreur", e.getMessage()));

@@ -17,19 +17,19 @@ import lombok.Setter;
 public class Player {
     
     @MongoId
-    private int id;
+    private String id;
     private int level;
     private int experience;
     private List<String> inventory; // Stocke les IDs des monstres
     
-    public Player(int id, int level, int experience, List<String> inventory) {
+    public Player(String id, int level, int experience, List<String> inventory) {
         this.id = id;
         this.level = level;
         this.experience = experience;
         this.inventory = (inventory != null) ? inventory : new ArrayList<>();
     }
 
-    public Player(int id) {
+    public Player(String id) {
         this.id = id;
         this.level = 0;
         this.experience = 0;
