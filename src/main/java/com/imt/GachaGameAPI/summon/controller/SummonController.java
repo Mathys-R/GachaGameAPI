@@ -16,7 +16,7 @@ public class SummonController {
     private SummonService summonService;
 
     @PostMapping("/{userId}")
-    public ResponseEntity<SummonDto> summonMonster(@PathVariable String userId) {
+    public ResponseEntity<SummonDto> summonMonster(@PathVariable int userId) {
         SummonDto summon = summonService.summonMonster(userId);
         return ResponseEntity.ok(summon);
     }

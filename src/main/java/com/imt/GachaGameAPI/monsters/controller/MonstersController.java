@@ -9,6 +9,7 @@ import com.imt.GachaGameAPI.monsters.service.MonstersService;
 // import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/monsters")
@@ -23,21 +24,26 @@ public class MonstersController {
 
     @GetMapping("/")
     public ResponseEntity<List<Monsters>> getAllMonsters() {
-        // return ResponseEntity.ok("test");
         List<Monsters> monsters = monstersService.getAllMonsters();
         return ResponseEntity.ok(monsters);
     }
 
-    // @GetMapping("/{id}")
-    // public ResponseEntity<Monsters> getMonsterById(@PathVariable String id) {
-    //     try {
-    //         Monsters monster = monstersService.getMonsterById(id);
-    //         return ResponseEntity.ok(monster);
-    //     } catch (RuntimeException e) {
-    //         return ResponseEntity.notFound().build();
-    //     }
-    // }
-    // Faire un map
+
+    @GetMapping("/rarity")
+    public ResponseEntity<Map<Integer, List<Monsters>>> getMonstersRarity() {
+        Map<Integer, List<Monsters>> monsters = monstersService.getMonstersRarity();
+        return ResponseEntity.ok(monsters);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<Monsters> getMonsterById(@PathVariable String id) {
+        try {
+            Monsters monster = monstersService.getMonsterById(id);
+            return ResponseEntity.ok(monster);
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
 
     @PostMapping("/save")
     public ResponseEntity<Monsters> createMonster(@RequestBody Monsters monster) {

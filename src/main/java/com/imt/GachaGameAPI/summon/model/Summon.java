@@ -8,13 +8,13 @@ public class Summon {
     @Id
     private String id;
     private String monsterId;
-    private String userId; // ID de l'utilisateur ayant invoqué
+    private int userId; // ID de l'utilisateur ayant invoqué
     private String timestamp;
 
     // Constructeurs
     public Summon() {}
 
-    public Summon(String monsterId, String userId, String timestamp) {
+    public Summon(String monsterId, int userId, String timestamp) {
         this.monsterId = monsterId;
         this.userId = userId;
         this.timestamp = timestamp;
@@ -37,11 +37,11 @@ public class Summon {
         this.monsterId = monsterId;
     }
 
-    public String getUserId() {
+    public int getUserId() {
         return userId;
     }
 
-    public void setUserId(String userId) {
+    public void setUserId(int userId) {
         this.userId = userId;
     }
 
