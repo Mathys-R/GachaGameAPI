@@ -7,21 +7,38 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 import java.util.List;
 
+/**
+ * Configuration de sécurité pour l'API.
+ * Configure les règles d'accès aux endpoints, la gestion CORS,
+ * la désactivation de CSRF et l'authentification par token JWT.
+ */
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
 
+    /**
+     * Filtre d'authentification JWT qui vérifie la présence et la validité des tokens.
+     */
     @Autowired
     private JwtAuthFilter jwtAuthFilter;
 
+    /**
+     * Configure la chaîne de filtres de sécurité pour l'application.
+     * Permet un accès public aux endpoints d'authentification et de documentation,
+     * et exige une authentification pour tous les autres endpoints.
+     *
+     * @param http La configuration HttpSecurity à personnaliser
+     * @return La chaîne de filtres de sécurité configurée
+     * @throws Exception Si une erreur survient pendant la configuration
+     */
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
@@ -38,6 +55,12 @@ public class SecurityConfig {
         return http.build();
     }
 
+    /**
+     * Crée un filtre CORS pour gérer les requêtes cross-origin.
+     * Configure les origines, méthodes et en-têtes autorisés.
+     *
+     * @return Un filtre CORS configuré
+     */
     @Bean
     public CorsFilter corsFilter() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
@@ -52,6 +75,12 @@ public class SecurityConfig {
         return new CorsFilter(source);
     }
 
+    /**
+     * Crée une source de configuration CORS basée sur les URL.
+     * Configure les origines, méthodes et en-têtes autorisés pour toutes les routes.
+     *
+     * @return Une source de configuration CORS
+     */
     @Bean
     public UrlBasedCorsConfigurationSource corsConfigurationSource() {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

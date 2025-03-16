@@ -10,6 +10,11 @@ import org.springframework.web.bind.annotation.*;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Contrôleur pour gérer l'authentification et la gestion des utilisateurs.
+ * Expose les endpoints REST pour l'inscription, la connexion, la validation de token
+ * et d'autres fonctionnalités liées à l'authentification des utilisateurs.
+ */
 @RestController
 @RequestMapping("/auth")
 @CrossOrigin(origins = "http://localhost:8080")  // Enable CORS
@@ -19,6 +24,12 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    /**
+     * Enregistre un nouvel utilisateur dans le système.
+     *
+     * @param request Map contenant les paramètres "username" et "password"
+     * @return ResponseEntity avec le DTO de l'utilisateur créé (code 200) ou un message d'erreur (code 400)
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody Map<String, String> request) {
         String username = request.get("username");
@@ -33,6 +44,12 @@ public class AuthController {
         }
     }
 
+    /**
+     * Récupère les informations d'un utilisateur par son nom d'utilisateur.
+     *
+     * @param username Le nom d'utilisateur à rechercher
+     * @return ResponseEntity avec les informations de l'utilisateur (code 200) ou un message d'erreur (code 404)
+     */
     @GetMapping("/get/{username}")
     public ResponseEntity<?> getUser(@PathVariable String username) {
         if (username.trim().isEmpty()) {
@@ -45,6 +62,12 @@ public class AuthController {
                         .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas").toString()));
     }
 
+    /**
+     * Récupère l'identifiant d'un utilisateur à partir de son nom d'utilisateur.
+     *
+     * @param username Le nom d'utilisateur à rechercher
+     * @return ResponseEntity avec l'ID de l'utilisateur (code 200) ou un message d'erreur (code 404)
+     */
     @GetMapping("/getId/{username}")
     public ResponseEntity<?> getId(@PathVariable String username) {
         if (username.trim().isEmpty()) {
@@ -57,6 +80,12 @@ public class AuthController {
                         .body(Map.of("Erreur", "L'utilisateur " + username + " n'existe pas").toString()));
     }
 
+    /**
+     * Supprime un utilisateur par son nom d'utilisateur.
+     *
+     * @param username Le nom d'utilisateur de l'utilisateur à supprimer
+     * @return ResponseEntity avec un message de succès (code 200) ou un message d'erreur (codes 400/404)
+     */
     @DeleteMapping({"/delete/{username}", "/delete/"})
     public ResponseEntity<Map<String, String>> deleteUser(@PathVariable(required = false) String username) {
         if (username == null || username.trim().isEmpty()) {
@@ -71,6 +100,13 @@ public class AuthController {
         return ResponseEntity.ok(Map.of("Succès", "Utilisateur " + username + " supprimé avec succès"));
     }
 
+    /**
+     * Valide un token d'authentification.
+     * Vérifie si le token existe et n'est pas expiré.
+     *
+     * @param token Le token à valider
+     * @return ResponseEntity avec le nom d'utilisateur (code 200) ou un message d'erreur (codes 400/401/404)
+     */
     @GetMapping({"/validate/{token}", "/validate/"})
     public ResponseEntity<?> validateToken(@PathVariable(required = false) String token) {
         if (token == null || token.trim().isEmpty()) {
@@ -95,6 +131,13 @@ public class AuthController {
         return ResponseEntity.ok(user.getUsername());
     }
 
+    /**
+     * Authentifie à nouveau un utilisateur avec son nom d'utilisateur et son mot de passe.
+     * Génère un nouveau token d'authentification.
+     *
+     * @param request Map contenant les paramètres "username" et "password"
+     * @return ResponseEntity avec l'utilisateur et son nouveau token (code 200) ou un message d'erreur (codes 400/401)
+     */
     @PostMapping("/re-authenticate")
     public ResponseEntity<?> reAuthenticate(@RequestBody Map<String, String> request) {
         String username = request.get("username");

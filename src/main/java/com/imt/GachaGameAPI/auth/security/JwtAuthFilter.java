@@ -17,11 +17,37 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import java.io.IOException;
 import java.util.ArrayList;
 
+/**
+ * Filtre d'authentification JWT qui intercepte toutes les requêtes HTTP.
+ * Vérifie la présence et la validité d'un token JWT dans l'en-tête Authorization.
+ * Certains chemins sont exemptés de l'authentification comme l'enregistrement,
+ * la réauthentification, la validation de token et les endpoints Swagger.
+ */
 @Component
 public class JwtAuthFilter extends OncePerRequestFilter {
 
+    /**
+     * Client REST utilisé pour valider les tokens en appelant le service d'authentification.
+     */
     private final RestTemplate restTemplate = new RestTemplate();
 
+    /**
+     * Traite chaque requête HTTP entrante et applique la logique d'authentification.
+     * Les requêtes OPTIONS et certains chemins spécifiques sont exemptés de la vérification.
+     * Pour les autres requêtes, vérifie la présence d'un token JWT valide dans l'en-tête.
+     * <p>
+     * Le processus d'authentification suit ces étapes :
+     * 1. Vérification du type de requête et des chemins exemptés
+     * 2. Extraction du token de l'en-tête Authorization
+     * 3. Validation du token via l'endpoint /auth/validate
+     * 4. Création d'un objet Authentication pour Spring Security si le token est valide
+     *
+     * @param request     La requête HTTP entrante
+     * @param response    La réponse HTTP à renvoyer
+     * @param filterChain La chaîne de filtres à poursuivre
+     * @throws ServletException Si une erreur de servlet se produit
+     * @throws IOException      Si une erreur d'entrée/sortie se produit
+     */
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
@@ -36,8 +62,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if (path.startsWith(request.getContextPath() + "/auth/register") ||
                 path.startsWith(request.getContextPath() + "/auth/re-authenticate") ||
                 path.startsWith(request.getContextPath() + "/auth/validate") ||
-                (path.contains("/v3/api-docs") || path.contains("/swagger-ui")|| path.contains("/index.html"))
-            ) {
+                (path.contains("/v3/api-docs") || path.contains("/swagger-ui") || path.contains("/index.html"))
+        ) {
             filterChain.doFilter(request, response);
             return;
         }
