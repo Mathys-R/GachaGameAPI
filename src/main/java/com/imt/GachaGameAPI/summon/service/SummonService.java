@@ -18,6 +18,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -47,7 +48,7 @@ public class SummonService {
         Summon summon = new Summon(summonedMonster.getId(), userId, timestamp);
         summonDao.save(summon);
     
-        playerService.addMonster(userId, summonedMonster.getId());
+        addMonster(userId, summonedMonster.getId(), token);
     
         return new SummonDto(summonedMonster.getId(), timestamp);
     }
@@ -74,10 +75,27 @@ public class SummonService {
 
         System.out.println("SummonService.getAllMonsters() called from Monsters API. Found: " + monstersList.size() + " monsters");
         return monstersList;
-    }    
+        }    
 
+        public void addMonster(String userId, String monsterId, String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
 
-    private Monsters getRandomMonster(List<Monsters> allMonsters) {
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://api-player:8082/player/" + userId + "/add-monster/" + monsterId;
+
+        ResponseEntity<Void> response = restTemplate.exchange(
+            url,
+            HttpMethod.POST,
+            entity,
+            Void.class
+        );
+        
+        System.out.println("Added monster " + monsterId + " to player " + userId);
+        }   
+
+        private Monsters getRandomMonster(List<Monsters> allMonsters) {
         Random random = new Random();
     
         double totalLootRate = allMonsters.stream().mapToDouble(Monsters::getLootRate).sum();

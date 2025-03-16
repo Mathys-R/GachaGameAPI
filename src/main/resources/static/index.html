@@ -294,10 +294,10 @@
         try {
             // First get the monster IDs from player inventory
             document.getElementById("monstersResponse").innerText = "Fetching player's monster inventory...";
-            const playerResponse = await fetchAPI(`${API_URL_PLAYER}/${playerId}`, "GET");
+            const playerResponse = await fetchAPI(`${API_URL_PLAYER}/${playerId}`, "GET");//////////////////////////////////////////////////////
             
-            if (!playerResponse || !playerResponse.inventory) {
-                document.getElementById("monstersResponse").innerText = "Error: Player inventory not found or empty.";
+            if (!playerResponse) {
+                document.getElementById("monstersResponse").innerText = "Error: Player inventory not found.";
                 return;
             }
             
@@ -310,24 +310,16 @@
             // Now fetch details for these monster IDs
             document.getElementById("monstersResponse").innerText = "Fetching monster details...";
             // Try using a POST request with the IDs in the body
-            const monstersDetails = await fetchAPI(
-                `${API_URL_MONSTERS}/details`, 
-                "POST", 
-                { ids: monsterIds },
-                "monstersResponse"
-            );
-            
-            // If the POST fails, fall back to the original GET approach
-            if (!monstersDetails) {
-                await fetchAPI(
+            const monstersDetails= await fetchAPI(
                     `${API_URL_MONSTERS}/list?ids=${monsterIds.join(',')}`, 
                     "GET", 
                     null, 
                     "monstersResponse"
                 );
-            }
         } catch (error) {
-            document.getElementById("monstersResponse").innerText = `Error: ${error.message}`;
+            console.error("Error fetching monsters:", error);
+            document.getElementById("monstersResponse").innerText = `Error fetching monster details: ${error.message}`
+            // document.getElementById("monstersResponse").innerText = `${playerResponse.inventory}`;
         }
     });
 
