@@ -4,7 +4,6 @@ import com.imt.GachaGameAPI.player.dto.PlayerJsonDto;
 import com.imt.GachaGameAPI.player.model.Player;
 import com.imt.GachaGameAPI.player.service.PlayerService;
 
-// import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -25,9 +24,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 
 @RestController
 @RequestMapping("/player")
-// @SecurityRequirement(name = "bearerAuth") 
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true") 
-// @CrossOrigin(origins = "*", allowCredentials = "true")
 public class PlayerController {
     
     private final PlayerService playerService;

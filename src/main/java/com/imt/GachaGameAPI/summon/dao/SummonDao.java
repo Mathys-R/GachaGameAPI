@@ -6,5 +6,4 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SummonDao extends MongoRepository<Summon, String> {
-    // Pas de méthode spécifique pour l'instant, MongoRepository gère le CRUD
 }

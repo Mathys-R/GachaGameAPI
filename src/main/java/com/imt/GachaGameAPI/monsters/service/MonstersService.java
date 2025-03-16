@@ -4,9 +4,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import com.imt.GachaGameAPI.monsters.dao.MonstersDao;
 import com.imt.GachaGameAPI.monsters.model.Monsters;
+
 import java.util.List;
-// import java.util.Map;
-// import java.util.stream.Collectors;
 
 @Service
 public class MonstersService {
@@ -21,14 +20,6 @@ public class MonstersService {
     public Monsters getMonsterById(String id) {
         return monsterDao.findById(id).orElseThrow(() -> new RuntimeException("Monster not found with id: " + id));
     }
-
-    // public Map<Integer, List<Monsters>> getMonstersRarity() {
-    //     return monsterDao.findAll().stream()
-    //             .collect(Collectors.groupingBy(monster -> {
-    //                 Integer rarity = monster.getRarity();
-    //                 return (rarity == null || rarity == 0) ? 1 : rarity; // default rarity is 1
-    //             }));
-    // }
 
     public Monsters createMonster(Monsters monster) {
         return monsterDao.save(monster);

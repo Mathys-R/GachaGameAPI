@@ -118,43 +118,45 @@ Bad Request
 #### 🔹 Corps de la requête
 ```json
 {
-  "typeElementaire": "Terre",
-  "hp": 160,
+  "typeElementaire": "fire",
+  "hp": 500,
   "atk": 70,
-  "def": 95,
-  "vit": 50,
+  "def": 40,
+  "vit": 20,
   "competences": [
     {
-      "nom": "Tremblement amélioré",
-      "degatsDeBase": 40,
-      "ratioDegats": 1.5,
-      "cooldown": 3,
-      "niveauAmelioration": 2,
+      "nom": "Fire ball",
+      "degatsDeBase": 50,
+      "ratioDegats": 1.2,
+      "cooldown": 2,
+      "niveauAmelioration": 0,
       "niveauAmeliorationMax": 5
     }
-  ]
+  ],
+  "lootRate": 0.5
 }
 ```
 
 #### 🔹 Exemple de réponse (200 OK)
 ```json
 {
-  "id": "60f8a12c3d4e5f67890abcdg",
-  "typeElementaire": "Terre",
-  "hp": 160,
+  "id": "67d60e7d0b74fd1f7979e3f8",
+  "typeElementaire": "fire",
+  "hp": 500,
   "atk": 70,
-  "def": 95,
-  "vit": 50,
+  "def": 40,
+  "vit": 20,
   "competences": [
     {
-      "nom": "Tremblement amélioré",
-      "degatsDeBase": 40,
-      "ratioDegats": 1.5,
-      "cooldown": 3,
-      "niveauAmelioration": 2,
+      "nom": "Fire ball",
+      "degatsDeBase": 50,
+      "ratioDegats": 1.2,
+      "cooldown": 2,
+      "niveauAmelioration": 0,
       "niveauAmeliorationMax": 5
     }
-  ]
+  ],
+  "lootRate": 0.5
 }
 ```
 

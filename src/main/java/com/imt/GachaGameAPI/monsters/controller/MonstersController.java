@@ -6,17 +6,11 @@ import org.springframework.web.bind.annotation.*;
 import com.imt.GachaGameAPI.monsters.model.Monsters;
 import com.imt.GachaGameAPI.monsters.service.MonstersService;
 
-// import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/monsters")
-// @SecurityRequirement(name = "bearerAuth") 
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true") 
-// @CrossOrigin(origins = "*", allowCredentials = "true")
-
 public class MonstersController {
 
     @Autowired
@@ -27,13 +21,6 @@ public class MonstersController {
         List<Monsters> monsters = monstersService.getAllMonsters();
         return ResponseEntity.ok(monsters);
     }
-
-
-    // @GetMapping("/rarity")
-    // public ResponseEntity<Map<Integer, List<Monsters>>> getMonstersRarity() {
-    //     Map<Integer, List<Monsters>> monsters = monstersService.getMonstersRarity();
-    //     return ResponseEntity.ok(monsters);
-    // }
 
     @GetMapping("/{id}")
     public ResponseEntity<Monsters> getMonsterById(@PathVariable String id) {
