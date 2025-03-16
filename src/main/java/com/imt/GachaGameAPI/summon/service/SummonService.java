@@ -1,5 +1,11 @@
 package com.imt.GachaGameAPI.summon.service;
 
+import org.springframework.web.client.RestTemplate;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
+
 import com.imt.GachaGameAPI.monsters.model.Monsters;
 import com.imt.GachaGameAPI.monsters.service.MonstersService;
 import com.imt.GachaGameAPI.summon.dao.SummonDao;
@@ -26,8 +32,10 @@ public class SummonService {
 
     @Autowired
     private PlayerService playerService;
-    public SummonDto summonMonster(String userId) {
-        List<Monsters> allMonsters = monstersService.getAllMonsters();
+    public SummonDto summonMonster(String userId, String token) {
+        System.out.println("\n\n\nToken : "+token);
+        List<Monsters> allMonsters = getAllMonsters(token);
+        
     
         if (allMonsters == null || allMonsters.isEmpty()) {
             throw new IllegalStateException("No monsters available for summoning.");
@@ -43,6 +51,30 @@ public class SummonService {
     
         return new SummonDto(summonedMonster.getId(), timestamp);
     }
+
+    public List<Monsters> getAllMonsters(String token) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Bearer " + token);
+        HttpEntity<String> entity = new HttpEntity<>(headers);
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "http://api-monsters:8083/monsters/";
+
+        ResponseEntity<Monsters[]> response = restTemplate.exchange(
+            url,
+            HttpMethod.GET,
+            entity,
+            Monsters[].class
+        );
+
+        Monsters[] monstersArray = response.getBody();
+        System.err.println("\n\n\n");
+        System.out.println(monstersArray);
+        List<Monsters> monstersList = monstersArray != null ? List.of(monstersArray) : new ArrayList<>();
+
+        System.out.println("SummonService.getAllMonsters() called from Monsters API. Found: " + monstersList.size() + " monsters");
+        return monstersList;
+    }    
 
 
     private Monsters getRandomMonster(List<Monsters> allMonsters) {

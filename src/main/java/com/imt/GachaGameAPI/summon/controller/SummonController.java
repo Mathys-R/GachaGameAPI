@@ -23,9 +23,9 @@ public class SummonController {
     @Autowired
     private SummonService summonService;
 
-    @PostMapping("/{userId}")
-    public ResponseEntity<SummonDto> summonMonster(@PathVariable String userId) {
-        SummonDto summon = summonService.summonMonster(userId);
+    @PostMapping("/{userId}/{token}")
+    public ResponseEntity<SummonDto> summonMonster(@PathVariable String userId, @PathVariable String token) {
+        SummonDto summon = summonService.summonMonster(userId, token);
         return ResponseEntity.ok(summon);
     }
     
