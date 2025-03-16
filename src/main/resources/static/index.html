@@ -54,7 +54,7 @@
             <button id="btnAddXP">Add XP</button>
         </div>
         <div class="input-group">
-            <input type="text" id="monsterId" placeholder="Monster ID">
+            <input type="number" id="uniqueId" placeholder="Unique Monster ID">
             <!-- <button id="btnAddMonster">Add Monster</button> -->
             <button id="btnRemoveMonster">Remove Monster</button>
         </div>
@@ -263,11 +263,12 @@
 
     document.getElementById("btnRemoveMonster").addEventListener("click", async () => {
         const playerId = getId();
-        const monsterId = document.getElementById("monsterId").value;
-        if (playerId && monsterId) {
-            await fetchAPI(`${API_URL_PLAYER}/${playerId}/remove-monster/${monsterId}`, "DELETE", null, "playerResponse");
+        const uniqueId = document.getElementById("uniqueId").value;
+        if (playerId && uniqueId) {
+            console.log(`${API_URL_PLAYER}/${playerId}/remove-monster/${uniqueId}`)
+            await fetchAPI(`${API_URL_PLAYER}/${playerId}/remove-monster/${uniqueId}`, "DELETE", null, "playerResponse");
         } else {
-            document.getElementById("playerResponse").innerText = `Error : playerId and/or monsterId missing`;
+            document.getElementById("playerResponse").innerText = `Error : playerId and/or unique monster Id missing`;
         }
     });
 

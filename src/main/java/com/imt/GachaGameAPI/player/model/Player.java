@@ -66,6 +66,6 @@ public class Player {
     }
 
     public boolean removeMonster(int uniqueId) {
-        return inventory.removeIf(monster -> monster.getUniqueId() == uniqueId);
+        return inventory.removeIf(mob -> mob.getUniqueId() == uniqueId);
     }
 }

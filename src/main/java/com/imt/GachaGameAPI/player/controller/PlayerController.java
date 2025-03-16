@@ -81,17 +81,29 @@ public class PlayerController {
     }
 
     
-    @GetMapping("{id}/getMonsters")
-    public ResponseEntity<List<Mob>> getMonsters(@PathVariable String id) {
+    // @GetMapping("{id}/getMonsters")
+    // public ResponseEntity<List<Mob>> getMonsters(@PathVariable String id) {
+    //     List<Player> players = playerService.findPlayerById(id);
+        
+    //     if (!players.isEmpty()) {
+    //         // Assuming a player is found, we just return their inventory (list of monster IDs)
+    //         Player player = players.get(0);
+    //         return ResponseEntity.ok(player.getInventory());
+    //     }
+    //     return ResponseEntity.notFound().build();
+    // }
+    
+    @GetMapping("{id}/inventory")
+    public ResponseEntity<List<Mob>> getInventory(@PathVariable String id) {
         List<Player> players = playerService.findPlayerById(id);
         
         if (!players.isEmpty()) {
-            // Assuming a player is found, we just return their inventory (list of monster IDs)
             Player player = players.get(0);
             return ResponseEntity.ok(player.getInventory());
         }
         return ResponseEntity.notFound().build();
     }
+
 
 
     @PostMapping("/{id}/add-xp/{xp}")
@@ -108,9 +120,10 @@ public class PlayerController {
             : ResponseEntity.badRequest().body(Map.of("error", "Inventory full"));
     }
 
-    @DeleteMapping("/{id}/remove-monster/{monsterId}")
+    @DeleteMapping("/{id}/remove-monster/{uniqueId}")
     public ResponseEntity<Map<String, String>> removeMonster(@PathVariable String id, @PathVariable int uniqueId) {
         boolean success = playerService.removeMonster(id, uniqueId);
+
         return success 
             ? ResponseEntity.ok(Map.of("message", "Monster removed!")) 
             : ResponseEntity.notFound().build();

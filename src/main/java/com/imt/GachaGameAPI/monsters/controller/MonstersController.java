@@ -6,6 +6,8 @@ import org.springframework.web.bind.annotation.*;
 import com.imt.GachaGameAPI.monsters.model.Monsters;
 import com.imt.GachaGameAPI.monsters.service.MonstersService;
 
+import com.imt.GachaGameAPI.player.dto.Mob;
+
 import java.util.List;
 
 @RestController
@@ -33,7 +35,7 @@ public class MonstersController {
     }
     @GetMapping("/list")
     // list of monsters info for one player's inventory 
-    public ResponseEntity<List<Monsters>> getMonstersByIds(@RequestParam List<String> ids) {
+    public ResponseEntity<List<Monsters>> getMonstersByIds(@RequestParam List<Mob> mobs) {
         try {
             List<Monsters> monsters = monstersService.getMonstersByIds(ids);
             return ResponseEntity.ok(monsters);
