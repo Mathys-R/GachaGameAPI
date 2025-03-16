@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport"="width=device-width, initial-scale=1.0">
     <title>Gacha Game API Tester</title>
     <link rel="stylesheet" href="styles.css">
 </head>
@@ -100,38 +100,65 @@
 </div>
 
 <script>
+    // Configuration des URLs des différentes APIs
     const API_URL = "http://localhost:8080"; 
     const API_URL_MONSTERS = "http://localhost:8083/monsters";
     const API_URL_PLAYER = "http://localhost:8082/player";
     const API_URL_AUTH = "http://localhost:8081/auth";
     const API_URL_SUMMON = "http://localhost:8084/summon";
 
+    /**
+     * Récupère le token d'authentification depuis le stockage local
+     * @returns {string} Le token ou une chaîne vide si non trouvé
+     */
     function getToken() {
         return localStorage.getItem("token") || "";
     }
 
+    /**
+     * Enregistre le token d'authentification et met à jour l'interface
+     * @param {string} token Token d'authentification à stocker
+     */
     function setToken(token) {
         localStorage.setItem("token", token);
-
-        document.getElementById("authResponse").innerText = "Authenticated!";
+        document.getElementById("authResponse").innerText = "Authentifié!";
     }
 
+    /**
+     * Récupère l'ID du joueur depuis le stockage local
+     * @returns {string} L'ID ou une chaîne vide si non trouvé
+     */
     function getId() {
         return localStorage.getItem("id") || "";
     }
 
+    /**
+     * Enregistre l'ID du joueur et met à jour l'interface
+     * @param {string} id ID du joueur à stocker
+     */
     function setId(id) {
         localStorage.setItem("id", id);
-
         document.getElementById("playerIdResponse").innerText = id;
     }
 
+    /**
+     * Déconnecte l'utilisateur en effaçant ses données de session
+     */
     function logout() {
         localStorage.removeItem("token");
         localStorage.removeItem("id");
-        document.getElementById("authResponse").innerText = "Logged out!";
+        document.getElementById("authResponse").innerText = "Déconnecté!";
     }
 
+    /**
+     * Fonction utilitaire pour appeler les APIs avec les bons en-têtes
+     * Gère automatiquement l'authentification et le format JSON
+     * @param {string} url URL à appeler
+     * @param {string} method Méthode HTTP (GET, POST, etc.)
+     * @param {Object} body Corps de la requête (facultatif)
+     * @param {string} responseElementId ID de l'élément HTML pour afficher la réponse
+     * @returns {Promise<Object>} Réponse de l'API ou null en cas d'erreur
+     */
     async function fetchAPI(url, method = "GET", body = null, responseElementId = "") {
         try {
             const headers = {
@@ -139,11 +166,11 @@
                 'Authorization': `Bearer ${getToken()}`
             };
             
-            console.log(`Sending ${method} request to: ${url}`);
-            console.log(`With headers:`, headers);
-            if (body) console.log(`With body:`, body);
+            console.log(`Envoi de requête ${method} vers: ${url}`);
+            console.log(`Avec en-têtes:`, headers);
+            if (body) console.log(`Avec corps:`, body);
             
-            // Add credentials: 'include' to ensure cookies are sent
+            // Ajout de credentials pour s'assurer que les cookies sont envoyés
             const response = await fetch(url, {
                 method,
                 headers,
@@ -151,13 +178,13 @@
                 credentials: 'include'
             });
 
-            console.log(`Response status: ${response.status}`);
-            console.log(`Response headers:`, response.headers);
+            console.log(`Statut de la réponse: ${response.status}`);
+            console.log(`En-têtes de la réponse:`, response.headers);
             
             if (!response.ok) {
                 const errorText = await response.text();
-                console.error(`API Error: Status ${response.status}, Body: ${errorText}`);
-                throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText || 'No error details'}`);
+                console.error(`Erreur API: Statut ${response.status}, Corps: ${errorText}`);
+                throw new Error(`Erreur HTTP! Statut: ${response.status}, Message: ${errorText || 'Pas de détails'}`);
             }
 
             const data = await response.json();
@@ -166,19 +193,21 @@
             }
             return data;
         } catch (error) {
-            console.error("Error:", error);
+            console.error("Erreur:", error);
             if (responseElementId) {
-                document.getElementById(responseElementId).innerText = `API Error: ${error.message}`;
+                document.getElementById(responseElementId).innerText = `Erreur API: ${error.message}`;
             }
             return null;
         }
     }
 
-    // AUTH: Register and store token
+    // AUTHENTIFICATION: Inscription et stockage du token
     async function register() {
+        // Récupération des informations d'authentification
         const username = document.getElementById("authUsername").value;
         const password = document.getElementById("authPassword").value;
 
+        // Appel à l'API d'authentification pour l'inscription
         const responseAuth = await fetch(`${API_URL_AUTH}/register`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -186,27 +215,27 @@
         });
 
         if (!responseAuth.ok) {
-            document.getElementById("authResponse").innerText = "Registration failed!";
+            document.getElementById("authResponse").innerText = "Échec de l'inscription!";
             return;
         }
 
+        // Traitement de la réponse et stockage du token
         const data = await responseAuth.json();
         if (data.token) {
             setToken(data.token); 
         } else {
-            document.getElementById("authResponse").innerText = "No token received!";
+            document.getElementById("authResponse").innerText = "Aucun token reçu!";
             return;
         }
 
         if (data.id) {
             setId(data.id);
         } else {
-            document.getElementById("authResponse").innerText = "No ID received!";
+            document.getElementById("authResponse").innerText = "Aucun ID reçu!";
             return;
         }
 
-        // console.log("Saving player with ID:", getId());
-
+        // Création du profil joueur associé à l'utilisateur
         const responsePlayer = await fetch(`${API_URL_PLAYER}/save`, {
             method: "POST",
             headers: { "Content-Type": "application/json" ,
@@ -215,7 +244,7 @@
         });
 
         if (!responsePlayer.ok) {
-            document.getElementById("playerIdResponse").innerText = "Id registration for player failed!";
+            document.getElementById("playerIdResponse").innerText = "Échec de l'enregistrement de l'ID du joueur!";
             return;
         }
     }
@@ -282,11 +311,11 @@
         }
     });
 
-    // MONSTERS API
+    // MONSTRES API
     document.getElementById("btnGetAllMonsters").addEventListener("click", async () => {
-        document.getElementById("monstersResponse").innerText = "Fetching all available monsters...";
+        document.getElementById("monstersResponse").innerText = "Récupération de tous les monstres disponibles...";
         
-        // Call the getAllMonsters endpoint
+        // Appel à l'endpoint getAllMonsters
         await fetchAPI(
             `${API_URL_MONSTERS}/`, 
             "GET", 
@@ -350,21 +379,21 @@
         const token = getToken();
         
         if (!id) {
-            document.getElementById("summonResponse").innerText = "Error: playerId missing";
+            document.getElementById("summonResponse").innerText = "Erreur: ID du joueur manquant";
             return;
         }
         
         if (!token) {
-            document.getElementById("summonResponse").innerText = "Error: Not authenticated. Please login first.";
+            document.getElementById("summonResponse").innerText = "Erreur: Non authentifié. Veuillez vous connecter d'abord.";
             return;
         }
         
-        document.getElementById("summonResponse").innerText = "Summoning monster...";
+        document.getElementById("summonResponse").innerText = "Invocation d'un monstre en cours...";
         
-        console.log("Current token:", token);
-        console.log("Current player ID:", id);
+        console.log("Token actuel:", token);
+        console.log("ID du joueur actuel:", id);
         
-        // Use the exact endpoint format from the SummonController
+        // Utilisation du format exact de l'endpoint du SummonController
         await fetchAPI(
             `${API_URL_SUMMON}/${id}/${token}`, 
             "POST", 
