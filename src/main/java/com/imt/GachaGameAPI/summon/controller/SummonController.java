@@ -12,8 +12,12 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/summon")
-@CrossOrigin(origins = "http://localhost:8080")  // Enable CORS
-// @CrossOrigin(origins = "*", allowCredentials = "true")
+@CrossOrigin(
+    origins = "*", 
+    allowedHeaders = "*",
+    methods = {RequestMethod.GET, RequestMethod.POST, RequestMethod.PUT, RequestMethod.DELETE, RequestMethod.OPTIONS},
+    maxAge = 3600
+)
 public class SummonController {
 
     @Autowired

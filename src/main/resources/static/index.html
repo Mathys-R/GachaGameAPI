@@ -64,28 +64,8 @@
     <!-- MONSTERS API -->
     <div class="endpoint">
         <h2>Monsters API</h2>
-        <!-- <button id="btnSaveMonster">Save Monster</button>
-        <textarea id="monsterData" placeholder=''>
-{
-    "typeElementaire": "Terre",
-    "hp": 150,
-    "atk": 65,
-    "def": 90,
-    "vit": 45,
-    "competences": [
-        {
-        "nom": "Tremblement",
-        "degatsDeBase": 35,
-        "ratioDegats": 1.3,
-        "cooldown": 3,
-        "niveauAmelioration": 1,
-        "niveauAmeliorationMax": 5
-        }
-    ]
-}
-        </textarea>
-        <div class="response" id="saveMonsterResponse">Waiting for response...</div> -->
-
+        
+        <button id="btnGetAllMonsters">Get All Available Monsters</button>
         <button id="btnGetMonsters">Get the Info about the Monsters in the inventory</button>
         <!-- <div class="input-group">
             <input type="text" id="monsterIdInput" placeholder="Monster ID">
@@ -102,6 +82,10 @@
         <button id="btnSummonMonster">Summon a Monster</button>
         
         <div class="response" id="summonResponse">Waiting for response...</div>
+
+        <!-- Add regenerate functionality -->
+        <button id="btnRegenerateSummons">Regenerate Past Summons</button>
+        <div class="response" id="regenerateResponse">Waiting for response...</div>
     </div>
 </div>
 
@@ -140,17 +124,30 @@
 
     async function fetchAPI(url, method = "GET", body = null, responseElementId = "") {
         try {
+            const headers = {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${getToken()}`
+            };
+            
+            console.log(`Sending ${method} request to: ${url}`);
+            console.log(`With headers:`, headers);
+            if (body) console.log(`With body:`, body);
+            
+            // Add credentials: 'include' to ensure cookies are sent
             const response = await fetch(url, {
                 method,
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${getToken()}`
-                },
-                body: body ? JSON.stringify(body) : null
+                headers,
+                body: body ? JSON.stringify(body) : null,
+                credentials: 'include'
             });
 
+            console.log(`Response status: ${response.status}`);
+            console.log(`Response headers:`, response.headers);
+            
             if (!response.ok) {
-                throw new Error(`HTTP error! Status: ${response.status}`);
+                const errorText = await response.text();
+                console.error(`API Error: Status ${response.status}, Body: ${errorText}`);
+                throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorText || 'No error details'}`);
             }
 
             const data = await response.json();
@@ -160,7 +157,10 @@
             return data;
         } catch (error) {
             console.error("Error:", error);
-            document.getElementById(responseElementId).innerText = `API Error: ${error.message}`;
+            if (responseElementId) {
+                document.getElementById(responseElementId).innerText = `API Error: ${error.message}`;
+            }
+            return null;
         }
     }
 
@@ -272,38 +272,115 @@
     });
 
     // MONSTERS API
-    document.getElementById("btnGetMonsters").addEventListener("click", async () => {
-    const playerId = getId(); // Get the player ID from the local storage
-    if (playerId) {
-        // Fetch the player's inventory (list of monster IDs)
-        const inventoryResponse = await fetchAPI(`${API_URL_PLAYER}/${playerId}/getMonsters`, "GET", null, "monstersResponse");
-
-        // If inventory is retrieved, fetch the details for each monster
-        if (inventoryResponse && Array.isArray(inventoryResponse)) {
-            // Send the list of monster IDs in the body to the Monsters API
-            const monstersDetails = await fetchAPI(`${API_URL_MONSTERS}/list?ids=${inventoryResponse.join(',')}`, "GET", null, "monstersResponse");
-        } else {
-            document.getElementById("monstersResponse").innerText = "Error: Unable to fetch inventory or no monsters found.";
-        }
-    } else {
-        document.getElementById("monstersResponse").innerText = "Error: playerId missing";
-    }
-});
-
-
-
+    document.getElementById("btnGetAllMonsters").addEventListener("click", async () => {
+        document.getElementById("monstersResponse").innerText = "Fetching all available monsters...";
+        
+        // Call the getAllMonsters endpoint
+        await fetchAPI(
+            `${API_URL_MONSTERS}/`, 
+            "GET", 
+            null, 
+            "monstersResponse"
+        );
+    });
     
-    // SUMMON API
-    document.getElementById("btnSummonMonster").addEventListener("click", async () => {
-        const id = getId();
-        if (id) {
-            await fetchAPI(`${API_URL_SUMMON}/${id}`, "POST", null, "summonResponse");
-        } else {
-            document.getElementById("summonResponse").innerText = `Error : playerId missing`;
+    document.getElementById("btnGetMonsters").addEventListener("click", async () => {
+        const playerId = getId();
+        if (!playerId) {
+            document.getElementById("monstersResponse").innerText = "Error: playerId missing";
+            return;
+        }
+        
+        try {
+            // First get the monster IDs from player inventory
+            document.getElementById("monstersResponse").innerText = "Fetching player's monster inventory...";
+            const playerResponse = await fetchAPI(`${API_URL_PLAYER}/${playerId}`, "GET");
+            
+            if (!playerResponse || !playerResponse.inventory) {
+                document.getElementById("monstersResponse").innerText = "Error: Player inventory not found or empty.";
+                return;
+            }
+            
+            const monsterIds = playerResponse.inventory;
+            if (!monsterIds.length) {
+                document.getElementById("monstersResponse").innerText = "Player has no monsters in inventory.";
+                return;
+            }
+            
+            // Now fetch details for these monster IDs
+            document.getElementById("monstersResponse").innerText = "Fetching monster details...";
+            // Try using a POST request with the IDs in the body
+            const monstersDetails = await fetchAPI(
+                `${API_URL_MONSTERS}/details`, 
+                "POST", 
+                { ids: monsterIds },
+                "monstersResponse"
+            );
+            
+            // If the POST fails, fall back to the original GET approach
+            if (!monstersDetails) {
+                await fetchAPI(
+                    `${API_URL_MONSTERS}/list?ids=${monsterIds.join(',')}`, 
+                    "GET", 
+                    null, 
+                    "monstersResponse"
+                );
+            }
+        } catch (error) {
+            document.getElementById("monstersResponse").innerText = `Error: ${error.message}`;
         }
     });
 
+    // SUMMON API
+    document.getElementById("btnSummonMonster").addEventListener("click", async () => {
+        const id = getId();
+        const token = getToken();
+        
+        if (!id) {
+            document.getElementById("summonResponse").innerText = "Error: playerId missing";
+            return;
+        }
+        
+        if (!token) {
+            document.getElementById("summonResponse").innerText = "Error: Not authenticated. Please login first.";
+            return;
+        }
+        
+        document.getElementById("summonResponse").innerText = "Summoning monster...";
+        
+        console.log("Current token:", token);
+        console.log("Current player ID:", id);
+        
+        // Use the exact endpoint format from the SummonController
+        await fetchAPI(
+            `${API_URL_SUMMON}/${id}`, 
+            "POST", 
+            null, 
+            "summonResponse"
+        );
+    });
 
+    // Add regenerate functionality based on SummonController
+    document.getElementById("btnRegenerateSummons").addEventListener("click", async () => {
+        const id = getId();
+        if (!id) {
+            document.getElementById("regenerateResponse").innerText = "Error: playerId missing";
+            return;
+        }
+        
+        document.getElementById("regenerateResponse").innerText = "Regenerating summons...";
+        
+        // This would typically require past summons data
+        // For testing purposes, we'll use an empty array
+        const pastSummons = [];
+        
+        await fetchAPI(
+            `${API_URL_SUMMON}/${id}/regenerate`, 
+            "POST", 
+            pastSummons, 
+            "regenerateResponse"
+        );
+    });
 </script>
 </body>
 </html>

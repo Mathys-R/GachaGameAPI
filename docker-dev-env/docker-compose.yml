@@ -104,19 +104,33 @@ services:
     environment:
       - MONGO_INITDB_ROOT_USERNAME=mongoadmin
       - MONGO_INITDB_ROOT_PASSWORD=password
+      # Add this to always run init script regardless of volume state
+      - MONGO_INITDB_DATABASE=monstersdb
     volumes:
       - mongo-monsters:/data/db
+      - ../mongo-init/monsters.json:/monsters.json
+      - ../mongo-init/init-monsters.js:/docker-entrypoint-initdb.d/init-monsters.js
     ports:
       - '27019:27017'
     expose:
       - 27017
+    # Add command to execute script after container is ready
+    command: >
+      bash -c '
+        echo "Waiting for MongoDB to start..."
+        sleep 5
+        echo "Running init script..."
+        mongosh --username mongoadmin --password password --authenticationDatabase admin monstersdb /docker-entrypoint-initdb.d/init-monsters.js
+        echo "Init complete, starting regular MongoDB process"
+        exec docker-entrypoint.sh mongod
+      '
     restart: on-failure
     healthcheck:
-      test: ["CMD", "mongosh", "--quiet", "127.0.0.1/admin", "--eval", "'quit(db.runCommand({ ping: 1 }).ok ? 0 : 2)'"]
-      interval: 60s
-      timeout: 5s
+      test: echo 'db.runCommand("ping").ok' | mongosh --quiet mongodb://mongoadmin:password@localhost:27017/admin
+      interval: 10s
+      timeout: 10s
       retries: 5
-      start_period: 30s
+      start_period: 40s
 
   # API Monsters service
   api-monsters:
