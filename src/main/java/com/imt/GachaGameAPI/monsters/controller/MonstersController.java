@@ -33,11 +33,12 @@ public class MonstersController {
             return ResponseEntity.notFound().build();
         }
     }
+    
     @GetMapping("/list")
     // list of monsters info for one player's inventory 
-    public ResponseEntity<List<Monsters>> getMonstersByIds(@RequestParam List<Mob> mobs) {
+    public ResponseEntity<List<Monsters>> getMonstersByIds(@RequestParam List<String> monsterIds) {
         try {
-            List<Monsters> monsters = monstersService.getMonstersByIds(ids);
+            List<Monsters> monsters = monstersService.getMonstersByIds(monsterIds);
             return ResponseEntity.ok(monsters);
         } catch (RuntimeException e) {
             return ResponseEntity.notFound().build();

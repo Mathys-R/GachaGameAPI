@@ -1,8 +1,11 @@
 package com.imt.GachaGameAPI.player.service;
 
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.imt.GachaGameAPI.player.dao.PlayerDao;
+import com.imt.GachaGameAPI.player.dto.Mob;
 import com.imt.GachaGameAPI.player.model.Player;
 import org.springframework.stereotype.Service;
 
@@ -66,6 +69,19 @@ public class PlayerService {
         return false; // Retourne false si aucun joueur n'est trouvé ou si la suppression échoue
     }
     
+    public List<Mob> getMonstersID(String playerId) {
+        List<Player> players = findPlayerById(playerId);
+    
+        if (!players.isEmpty()) { // Vérifie si la liste contient au moins un joueur
+            Player player = players.get(0); // Prend le premier joueur trouvé
+            List<Mob> inventory = player.getInventory();
+           
+            return inventory;
+        }
+
+        return null; // Retourne null si aucun joueur n'est trouvé
+    }
+
     public boolean removeAllPlayers() {
         List<Player> players = getAllPlayers();
     

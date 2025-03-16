@@ -3,13 +3,19 @@ package com.imt.GachaGameAPI.player.controller;
 import com.imt.GachaGameAPI.player.dto.PlayerJsonDto;
 import com.imt.GachaGameAPI.player.model.Player;
 import com.imt.GachaGameAPI.player.service.PlayerService;
-
+import com.imt.GachaGameAPI.monsters.model.Monsters;
 import com.imt.GachaGameAPI.player.dto.Mob;
+import com.imt.GachaGameAPI.player.dto.MobDetails;
+
 import jakarta.validation.Valid;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +23,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.client.RestTemplate;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
@@ -91,20 +98,45 @@ public class PlayerController {
     //         return ResponseEntity.ok(player.getInventory());
     //     }
     //     return ResponseEntity.notFound().build();
-    // }
-    
-    @GetMapping("{id}/inventory")
-    public ResponseEntity<List<Mob>> getInventory(@PathVariable String id) {
-        List<Player> players = playerService.findPlayerById(id);
+    @GetMapping("{playerId}/inventory/{token}")
+    public ResponseEntity<List<MobDetails>> getInventory(@PathVariable String playerId, @PathVariable String token) {
+        List<Mob> inventory = playerService.getMonstersID(playerId);
         
-        if (!players.isEmpty()) {
-            Player player = players.get(0);
-            return ResponseEntity.ok(player.getInventory());
+        if (inventory == null || inventory.isEmpty()) {
+            return ResponseEntity.notFound().build();
         }
-        return ResponseEntity.notFound().build();
+
+        RestTemplate restTemplate = new RestTemplate();
+        List<MobDetails> detailedInventory = new ArrayList<>();
+        
+        for (Mob mob : inventory) {
+            try {
+                // Set up headers with Bearer token
+                HttpHeaders headers = new HttpHeaders();
+                headers.setBearerAuth(token);
+                System.out.println("Bearer token: " + token);
+                HttpEntity<String> entity = new HttpEntity<>(headers);
+                
+                // Get monster details from monster API with authorization
+                ResponseEntity<Monsters> response = restTemplate.exchange(
+                    "http://api-monsters:8083/monsters/" + mob.getMonsterId(), 
+                    HttpMethod.GET,
+                    entity,
+                    Monsters.class
+                );
+                
+                if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+                    detailedInventory.add(new MobDetails(mob.getUniqueId(), response.getBody()));
+                    System.out.println("Monster details fetched: " + response.getBody());
+                }
+            } catch (Exception e) {
+                System.err.println("Error fetching monster details: " + e.getMessage());
+                // Continue with next monster even if one fails
+            }
+        }
+        
+        return ResponseEntity.ok(detailedInventory);
     }
-
-
 
     @PostMapping("/{id}/add-xp/{xp}")
     public ResponseEntity<Map<String, String>> addExperience(@PathVariable String id, @PathVariable int xp) {
