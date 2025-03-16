@@ -12,7 +12,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 import java.util.ArrayList;
 
@@ -27,62 +26,69 @@ public class SummonService {
 
     @Autowired
     private PlayerService playerService;
-
     public SummonDto summonMonster(String userId) {
-        Map<Integer,List<Monsters>> monsters = monstersService.getMonstersRarity();
-        Monsters summonedMonster = getRandomMonster(monsters);
-
+        List<Monsters> allMonsters = monstersService.getAllMonsters();
+    
+        if (allMonsters == null || allMonsters.isEmpty()) {
+            throw new IllegalStateException("No monsters available for summoning.");
+        }
+    
+        Monsters summonedMonster = getRandomMonster(allMonsters);
+    
         String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-
         Summon summon = new Summon(summonedMonster.getId(), userId, timestamp);
         summonDao.save(summon);
-
-        // Ajoutez le monstre à l'inventaire du joueur
+    
         playerService.addMonster(userId, summonedMonster.getId());
-
-        return new SummonDto(
-                summonedMonster.getId(),
-                timestamp
-        );
+    
+        return new SummonDto(summonedMonster.getId(), timestamp);
     }
 
-    private Monsters getRandomMonster(Map<Integer, List<Monsters>> monstersByRarity) {
+
+    private Monsters getRandomMonster(List<Monsters> allMonsters) {
         Random random = new Random();
-        
-        // Définit les poids pour chaque niveau de rareté (1 à 9)
-        Map<Integer, Integer> rarityWeights = Map.of(
-            1, 45,  // Plus commun
-            2, 25,
-            3, 15,
-            4, 10,
-            5, 5,
-            6, 3,
-            7, 2,
-            8, 1,
-            9, 1   // Plus rare
-        );
-        
-        // Calcule le poids total
-        int totalWeight = rarityWeights.values().stream().mapToInt(Integer::intValue).sum();
-        
-        // Génère un nombre aléatoire dans la plage du poids total
-        int randomWeight = random.nextInt(totalWeight);
-        
-        // Sélectionne le niveau de rareté basé sur le poids aléatoire
-        int cumulativeWeight = 0;
-        int selectedRarityLevel = 1; // Par défaut au niveau de rareté le plus bas
-        for (Map.Entry<Integer, Integer> entry : rarityWeights.entrySet()) {
-            cumulativeWeight += entry.getValue();
-            if (randomWeight < cumulativeWeight) {
-                selectedRarityLevel = entry.getKey();
-                break;
+    
+        double totalLootRate = allMonsters.stream().mapToDouble(Monsters::getLootRate).sum();
+    
+        if (totalLootRate <= 0) {
+            throw new IllegalStateException("Total lootRate must be a positive value");
+        }
+    
+        double randomLoot = random.nextDouble() * totalLootRate;
+        double cumulativeLoot = 0.0;
+    
+        for (Monsters monster : allMonsters) {
+            cumulativeLoot += monster.getLootRate();
+            if (randomLoot < cumulativeLoot) {
+                return monster;
             }
         }
-        
-        // Récupère les monstres de la rareté sélectionnée
-        List<Monsters> monstersOfSelectedRarity = monstersByRarity.get(selectedRarityLevel);
-        
-        // Retourne un monstre aléatoire de la rareté sélectionnée
-        return monstersOfSelectedRarity.get(random.nextInt(monstersOfSelectedRarity.size()));
+    
+        return allMonsters.get(random.nextInt(allMonsters.size()));
     }
+    
+    public List<SummonDto> regenerateSummons(String userId, List<SummonDto> pastSummons) {
+        List<SummonDto> regeneratedSummons = new ArrayList<>();
+    
+        for (SummonDto pastSummon : pastSummons) {
+            // Récupération du monstre correspondant à l'ancienne invocation
+            Monsters originalMonster = monstersService.getMonsterById(pastSummon.getMonsterId());
+    
+            if (originalMonster != null) {
+                // Création d'un nouvel enregistrement d'invocation avec le même monstre
+                String timestamp = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                Summon summon = new Summon(originalMonster.getId(), userId, timestamp);
+                summonDao.save(summon);
+    
+                // Ajout du monstre à l'inventaire du joueur
+                playerService.addMonster(userId, originalMonster.getId());
+    
+                // Ajout à la liste des invocations re-générées
+                regeneratedSummons.add(new SummonDto(originalMonster.getId(), timestamp));
+            }
+        }
+    
+        return regeneratedSummons;
+    }
+    
 }

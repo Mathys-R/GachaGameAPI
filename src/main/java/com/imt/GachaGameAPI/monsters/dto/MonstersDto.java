@@ -8,9 +8,10 @@ public class MonstersDto {
     private int def;
     private int vit;
     private Competence[] competences;
+    private double lootRate;
 
     // Constructors
-    public MonstersDto(String id, String typeElementaire, int hp, int atk, int def, int vit, Competence[] competences) {
+    public MonstersDto(String id, String typeElementaire, int hp, int atk, int def, int vit, Competence[] competences, double lootRate) {
         this.id = id;
         this.typeElementaire = typeElementaire;
         this.hp = hp;
@@ -18,6 +19,7 @@ public class MonstersDto {
         this.def = def;
         this.vit = vit;
         this.competences = competences;
+        this.lootRate = lootRate;
     }
 
     // Getters and Setters
@@ -75,5 +77,13 @@ public class MonstersDto {
 
     public void setCompetences(Competence[] competences) {
         this.competences = competences;
+    }
+
+    public double getLootRate() {
+        return lootRate;
+    }
+
+    public void setLootRate(double lootRate) {
+        this.lootRate = lootRate;
     }
 }

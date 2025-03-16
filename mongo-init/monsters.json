@@ -1,0 +1,60 @@
+[
+    {
+      "id": "67d60e7d0b74fd1f7979e3f8",
+      "typeElementaire": "fire",
+      "hp": 500,
+      "atk": 70,
+      "def": 40,
+      "vit": 20,
+      "competences": [
+        {
+          "nom": "Fire ball",
+          "degatsDeBase": 50,
+          "ratioDegats": 1.2,
+          "cooldown": 2,
+          "niveauAmelioration": 0,
+          "niveauAmeliorationMax": 5
+        }
+      ],
+      "lootRate": 0.5
+    },
+    {
+      "id": "67d60e900b74fd1f7979e3f9",
+      "typeElementaire": "water",
+      "hp": 750,
+      "atk": 50,
+      "def": 50,
+      "vit": 80,
+      "competences": [
+        {
+          "nom": "water jet",
+          "degatsDeBase": 45,
+          "ratioDegats": 1.2,
+          "cooldown": 2,
+          "niveauAmelioration": 0,
+          "niveauAmeliorationMax": 5
+        }
+      ],
+      "lootRate": 0.4
+    },
+    {
+      "id": "67d60e9c0b74fd1f7979e3fa",
+      "typeElementaire": "plant",
+      "hp": 200,
+      "atk": 130,
+      "def": 30,
+      "vit": 90,
+      "competences": [
+        {
+          "nom": "leaf blow",
+          "degatsDeBase": 150,
+          "ratioDegats": 1.2,
+          "cooldown": 2,
+          "niveauAmelioration": 0,
+          "niveauAmeliorationMax": 5
+        }
+      ],
+      "lootRate": 0.1
+    }
+  ]
+  

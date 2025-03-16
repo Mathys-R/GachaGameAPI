@@ -29,11 +29,11 @@ public class MonstersController {
     }
 
 
-    @GetMapping("/rarity")
-    public ResponseEntity<Map<Integer, List<Monsters>>> getMonstersRarity() {
-        Map<Integer, List<Monsters>> monsters = monstersService.getMonstersRarity();
-        return ResponseEntity.ok(monsters);
-    }
+    // @GetMapping("/rarity")
+    // public ResponseEntity<Map<Integer, List<Monsters>>> getMonstersRarity() {
+    //     Map<Integer, List<Monsters>> monsters = monstersService.getMonstersRarity();
+    //     return ResponseEntity.ok(monsters);
+    // }
 
     @GetMapping("/{id}")
     public ResponseEntity<Monsters> getMonsterById(@PathVariable String id) {

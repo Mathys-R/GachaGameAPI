@@ -15,8 +15,8 @@ public class Monsters {
     private int atk;
     private int def;
     private int vit;
-    private int rarity;
     private Competence[] competences;
+    private double lootRate;
 
     public Monsters() {}
 
@@ -76,11 +76,11 @@ public class Monsters {
         this.competences = competences;
     }
 
-    public int getRarity() {
-        return rarity;
+    public double getLootRate() {
+        return lootRate;
     }
 
-    public void setRarity(int rarity) {
-        this.rarity = rarity;
+    public void setLootRate(double lootRate) {
+        this.lootRate = lootRate;
     }
 }

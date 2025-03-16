@@ -43,7 +43,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         // config.setAllowedOrigins(List.of("http://localhost:8080")); // Allow frontend
-        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:8082"));
+        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:8081", "http://localhost:8082", "http://localhost:8083", "http://localhost:8084"));
 
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
@@ -57,7 +57,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         // config.setAllowedOrigins(List.of("http://localhost:8080")); // Allow frontend
-        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:8082"));
+        config.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:8081", "http://localhost:8082", "http://localhost:8083", "http://localhost:8084"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
