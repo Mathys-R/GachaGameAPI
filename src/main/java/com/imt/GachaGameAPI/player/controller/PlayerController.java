@@ -30,6 +30,11 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 
+/**
+ * Contrôleur REST pour la gestion des joueurs dans le système.
+ * Ce composant permet de gérer toutes les opérations liées aux joueurs: création, 
+ * récupération des informations, manipulation de l'expérience et gestion de l'inventaire de monstres.
+ */
 @RestController
 @RequestMapping("/player")
 @CrossOrigin(origins = "http://localhost:8080", allowCredentials = "true") 
@@ -41,11 +46,21 @@ public class PlayerController {
         this.playerService = playerService;
     }
 
+    /**
+     * Gestion des requêtes OPTIONS pour le support CORS
+     * Cette méthode est nécessaire pour le bon fonctionnement des pré-vérifications du navigateur
+     */
     @RequestMapping(method = RequestMethod.OPTIONS)
         public ResponseEntity<?> handleOptions() {
             return ResponseEntity.ok().build();
     }
     
+    /**
+     * Enregistre un nouveau joueur ou met à jour un joueur existant
+     * Les données sont validées avant traitement grâce à l'annotation @Valid
+     * @param player Données du joueur à sauvegarder
+     * @return Message de confirmation
+     */
     @PostMapping("/save")
     public ResponseEntity<Map<String, String>> createPlayer(@Valid @RequestBody PlayerJsonDto player) {
         playerService.savePlayer(
@@ -98,6 +113,13 @@ public class PlayerController {
     //         return ResponseEntity.ok(player.getInventory());
     //     }
     //     return ResponseEntity.notFound().build();
+    /**
+     * Récupère l'inventaire détaillé des monstres d'un joueur
+     * Cette méthode fait une communication sécurisée inter-services pour obtenir les détails complets des monstres
+     * @param playerId Identifiant du joueur
+     * @param token Token d'authentification pour accéder aux services de monstres
+     * @return Liste des monstres avec leurs caractéristiques complètes
+     */
     @GetMapping("{playerId}/inventory/{token}")
     public ResponseEntity<List<MobDetails>> getInventory(@PathVariable String playerId, @PathVariable String token) {
         List<Mob> inventory = playerService.getMonstersID(playerId);
@@ -111,13 +133,13 @@ public class PlayerController {
         
         for (Mob mob : inventory) {
             try {
-                // Set up headers with Bearer token
+                // Configuration de l'authentification par token
                 HttpHeaders headers = new HttpHeaders();
                 headers.setBearerAuth(token);
                 System.out.println("Bearer token: " + token);
                 HttpEntity<String> entity = new HttpEntity<>(headers);
                 
-                // Get monster details from monster API with authorization
+                // Communication avec le service de monstres en utilisant le token d'authentification
                 ResponseEntity<Monsters> response = restTemplate.exchange(
                     "http://api-monsters:8083/monsters/" + mob.getMonsterId(), 
                     HttpMethod.GET,
@@ -131,7 +153,7 @@ public class PlayerController {
                 }
             } catch (Exception e) {
                 System.err.println("Error fetching monster details: " + e.getMessage());
-                // Continue with next monster even if one fails
+                // Continue même en cas d'échec pour un monstre spécifique
             }
         }
         
@@ -152,6 +174,12 @@ public class PlayerController {
             : ResponseEntity.badRequest().body(Map.of("error", "Inventory full"));
     }
 
+    /**
+     * Supprime un monstre de l'inventaire d'un joueur
+     * @param id Identifiant du joueur
+     * @param uniqueId Identifiant unique du monstre dans l'inventaire
+     * @return Message de succès ou erreur 404 si l'opération échoue
+     */
     @DeleteMapping("/{id}/remove-monster/{uniqueId}")
     public ResponseEntity<Map<String, String>> removeMonster(@PathVariable String id, @PathVariable int uniqueId) {
         boolean success = playerService.removeMonster(id, uniqueId);
