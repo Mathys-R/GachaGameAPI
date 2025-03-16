@@ -14,6 +14,8 @@ Elle est composée de plusieurs microservices qui communiquent entre eux :
 - **Service de gestion des monstres** : Catalogue de monstres disponibles avec leurs caractéristiques
 - **Service d'invocation** : Système de "gacha" permettant d'invoquer des monstres aléatoirement selon leur rareté
 
+Un compte-rendu de la gestion du projet est disponible dans le repo.
+
 ## Prérequis
 - Docker et Docker Compose
 - Git (pour cloner le dépôt)
