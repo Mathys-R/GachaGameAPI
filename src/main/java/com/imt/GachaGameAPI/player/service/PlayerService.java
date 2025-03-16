@@ -53,12 +53,12 @@ public class PlayerService {
         return false; // Retourne false si aucun joueur n'est trouvé ou si l'ajout échoue
     }
     
-    public boolean removeMonster(String playerId, String monsterId) {
+    public boolean removeMonster(String playerId, int uniqueId) {
         List<Player> players = findPlayerById(playerId);
     
         if (!players.isEmpty()) { // Vérifie si la liste contient au moins un joueur
             Player player = players.get(0); // Prend le premier joueur trouvé
-            if (player.removeMonster(monsterId)) {
+            if (player.removeMonster(uniqueId)) {
                 playerDao.save(player);
                 return true;
             }

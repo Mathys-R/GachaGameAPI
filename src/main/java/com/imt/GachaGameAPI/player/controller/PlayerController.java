@@ -4,6 +4,7 @@ import com.imt.GachaGameAPI.player.dto.PlayerJsonDto;
 import com.imt.GachaGameAPI.player.model.Player;
 import com.imt.GachaGameAPI.player.service.PlayerService;
 
+import com.imt.GachaGameAPI.player.dto.Mob;
 import jakarta.validation.Valid;
 
 import java.util.List;
@@ -81,7 +82,7 @@ public class PlayerController {
 
     
     @GetMapping("{id}/getMonsters")
-    public ResponseEntity<List<String>> getMonsters(@PathVariable String id) {
+    public ResponseEntity<List<Mob>> getMonsters(@PathVariable String id) {
         List<Player> players = playerService.findPlayerById(id);
         
         if (!players.isEmpty()) {
@@ -108,8 +109,8 @@ public class PlayerController {
     }
 
     @DeleteMapping("/{id}/remove-monster/{monsterId}")
-    public ResponseEntity<Map<String, String>> removeMonster(@PathVariable String id, @PathVariable String monsterId) {
-        boolean success = playerService.removeMonster(id, monsterId);
+    public ResponseEntity<Map<String, String>> removeMonster(@PathVariable String id, @PathVariable int uniqueId) {
+        boolean success = playerService.removeMonster(id, uniqueId);
         return success 
             ? ResponseEntity.ok(Map.of("message", "Monster removed!")) 
             : ResponseEntity.notFound().build();

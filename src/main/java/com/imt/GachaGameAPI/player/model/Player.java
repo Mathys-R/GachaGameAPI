@@ -6,6 +6,8 @@ import java.util.List;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.MongoId;
 
+import com.imt.GachaGameAPI.player.dto.Mob;
+
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -20,20 +22,21 @@ public class Player {
     private String id;
     private int level;
     private int experience;
-    private List<String> inventory; // Stocke les IDs des monstres
+    private int nextMonsterId = 1; // Compteur d'ID unique pour les monstres
+    private List<Mob> inventory; // Stocke les IDs des monstres
     
-    public Player(String id, int level, int experience, List<String> inventory) {
+    public Player(String id, int level, int experience, List<Mob> inventory) {
         this.id = id;
         this.level = level;
         this.experience = experience;
-        this.inventory = (inventory != null) ? inventory : new ArrayList<>();
+        this.inventory = (inventory != null) ? inventory : new ArrayList<Mob>();
     }
 
     public Player(String id) {
         this.id = id;
         this.level = 0;
         this.experience = 0;
-        this.inventory = new ArrayList<String>();
+        this.inventory = new ArrayList<Mob>();
     }
 
     public int getXpThreshold() {
@@ -55,13 +58,14 @@ public class Player {
 
     public boolean addMonster(String monsterId) {
         if (inventory.size() < 10 + level) { // Taille max = 10 + level
-            inventory.add(monsterId);
+            inventory.add(new Mob(nextMonsterId, monsterId));
+            nextMonsterId++;
             return true;
         }
         return false;
     }
 
-    public boolean removeMonster(String monsterId) {
-        return inventory.remove(monsterId);
+    public boolean removeMonster(int uniqueId) {
+        return inventory.removeIf(monster -> monster.getUniqueId() == uniqueId);
     }
 }

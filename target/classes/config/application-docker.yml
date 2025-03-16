@@ -15,5 +15,3 @@ spring:
 api:
   base-url: "http://localhost:8080"
   
-profiles:
-  active: docker 

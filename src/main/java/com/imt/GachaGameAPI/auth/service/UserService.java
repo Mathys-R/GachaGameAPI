@@ -3,14 +3,10 @@ package com.imt.GachaGameAPI.auth.service;
 import com.imt.GachaGameAPI.auth.dao.UserDAO;
 import com.imt.GachaGameAPI.auth.dto.UserDTO;
 import com.imt.GachaGameAPI.auth.model.User;
-import com.imt.GachaGameAPI.player.model.Player;
-import com.imt.GachaGameAPI.player.service.PlayerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.Optional;
 
 @Service

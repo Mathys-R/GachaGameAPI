@@ -13,7 +13,6 @@ public class CorsConfig {
     @Bean
     public CorsFilter corsFilter() {
         CorsConfiguration corsConfig = new CorsConfiguration();
-        // corsConfig.setAllowedOrigins(List.of("http://localhost:8080")); // Allow frontend
         corsConfig.setAllowedOrigins(List.of("http://localhost:8080", "http://localhost:8082"));
 
         corsConfig.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));

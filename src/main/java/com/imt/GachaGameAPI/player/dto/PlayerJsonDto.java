@@ -16,7 +16,7 @@ public class PlayerJsonDto {
     @NotNull private String id;
     @NotNull @Min(0) private int level;
     @NotNull @Min(0) private int experience;
-    private List<String> inventory; // Liste des IDs des monstres
+    private List<Mob> inventory; // Liste des monstres dans l'inventaire
 
     public String getId() {
         return id;
@@ -30,7 +30,7 @@ public class PlayerJsonDto {
         return experience;
     }
 
-    public List<String> getInventory() {
+    public List<Mob> getInventory() {
         return inventory;
     }
 
@@ -44,7 +44,7 @@ public class PlayerJsonDto {
             '}';
     }
 
-    public PlayerJsonDto(String id, int level, int experience, List<String> inventory) {
+    public PlayerJsonDto(String id, int level, int experience, List<Mob> inventory) {
         this.id = id;
         this.level = level;
         this.experience = experience;
