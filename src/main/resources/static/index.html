@@ -84,6 +84,16 @@
         <div class="response" id="summonResponse">Waiting for response...</div>
 
         <!-- Add regenerate functionality -->
+        <textarea id="pastSummonsData" placeholder='[{
+            "monsterId": "67d73516dc3de8717a6b140b",
+            "userId": "67d7353c453cae68a437bc71",
+            "timestamp": "2025-03-16 20:13:13"
+          },{
+            "monsterId": "67d73516dc3de8717a6b140c",
+            "userId": "67d7353c453cae68a437bc71",
+            "timestamp": "2025-03-16 20:13:13"
+          }]'></textarea>
+
         <button id="btnRegenerateSummons">Regenerate Past Summons</button>
         <div class="response" id="regenerateResponse">Waiting for response...</div>
     </div>
@@ -366,21 +376,20 @@
     // Add regenerate functionality based on SummonController
     document.getElementById("btnRegenerateSummons").addEventListener("click", async () => {
         const id = getId();
-        if (!id) {
-            document.getElementById("regenerateResponse").innerText = "Error: playerId missing";
+        const token = getToken();
+        if (!id || !token) {
+            document.getElementById("regenerateResponse").innerText = "Error: playerId or token missing";
             return;
         }
         
         document.getElementById("regenerateResponse").innerText = "Regenerating summons...";
-        
-        // This would typically require past summons data
-        // For testing purposes, we'll use an empty array
-        const pastSummons = [];
-        
+        const pastSummonsData = document.getElementById("pastSummonsData").value;
+        const parsedData = JSON.parse(pastSummonsData);
+
         await fetchAPI(
-            `${API_URL_SUMMON}/${id}/regenerate`, 
+            `${API_URL_SUMMON}/regenerate/${token}`, 
             "POST", 
-            pastSummons, 
+            parsedData,
             "regenerateResponse"
         );
     });

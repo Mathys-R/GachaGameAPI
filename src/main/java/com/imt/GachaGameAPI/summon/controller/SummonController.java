@@ -1,7 +1,10 @@
 package com.imt.GachaGameAPI.summon.controller;
 
 import com.imt.GachaGameAPI.summon.dto.SummonDto;
+import com.imt.GachaGameAPI.summon.model.Summon;
 import com.imt.GachaGameAPI.summon.service.SummonService;
+
+import jakarta.validation.Valid;
 
 import java.util.List;
 
@@ -29,9 +32,9 @@ public class SummonController {
         return ResponseEntity.ok(summon);
     }
     
-    @PostMapping("/{userId}/regenerate")
-    public ResponseEntity<List<SummonDto>> summonRegenerate(@PathVariable String userId, @RequestBody List<SummonDto> pastSummons) {
-        List<SummonDto> regeneratedSummons = summonService.regenerateSummons(userId, pastSummons);
+    @PostMapping("/regenerate/{token}")
+    public ResponseEntity<List<SummonDto>> summonRegenerate(@PathVariable String token, @Valid @RequestBody List<Summon> pastSummons) {
+        List<SummonDto> regeneratedSummons = summonService.regenerateSummons(pastSummons, token);
         return ResponseEntity.ok(regeneratedSummons);
     }
 }
